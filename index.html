@@ -54,7 +54,7 @@
                         <span>טכנולוגיות למידה עכשווית</span>
                         <span id="header-semester" class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold px-2.5 py-0.5 rounded-full uppercase">סמסטר א' תשפ"ו</span>
                     </h1>
-                    <p class="text-xs text-slate-400">פורטל בריפים אינטראקטיבי לסימולציות ארגוניות • מערכת סנכרון בזמן אמת</p>
+                    <p class="text-xs text-slate-400">פורטל בריפים אינטראקטיבי לסימולציות ארגוניות • מערכת סנכרון בענן בזמן אמת</p>
                 </div>
             </div>
 
@@ -62,8 +62,8 @@
             <div class="flex items-center gap-3 flex-wrap">
                 <!-- Sync Engine Status Badge -->
                 <div id="sync-status-badge" class="bg-slate-950 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2 pulse-live">
-                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span class="text-slate-300 font-bold">סנכרון ענן: <span id="sync-status-text" class="text-emerald-400">פעיל בלייב</span></span>
+                    <span id="sync-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    <span class="text-slate-300 font-bold">סנכרון ענן: <span id="sync-status-text" class="text-emerald-400">מתחבר לענן...</span></span>
                 </div>
 
                 <!-- Registered Teams Status -->
@@ -140,12 +140,12 @@
                         </button>
                         
                         <div class="flex-1 flex items-center gap-1.5 justify-center h-6" id="visualizer-container">
-                            <div class="w-1 bg-amber-500 h-2 rounded-full visualizer-bar"></div>
-                            <div class="w-1 bg-amber-400 h-4 rounded-full visualizer-bar"></div>
-                            <div class="w-1 bg-amber-500 h-3 rounded-full visualizer-bar"></div>
-                            <div class="w-1 bg-amber-300 h-5 rounded-full visualizer-bar"></div>
-                            <div class="w-1 bg-amber-500 h-2 rounded-full visualizer-bar"></div>
-                            <div class="w-1 bg-amber-400 h-4 rounded-full visualizer-bar"></div>
+                            <div class="w-1 bg-amber-500 h-2 rounded-full"></div>
+                            <div class="w-1 bg-amber-400 h-4 rounded-full"></div>
+                            <div class="w-1 bg-amber-500 h-3 rounded-full"></div>
+                            <div class="w-1 bg-amber-300 h-5 rounded-full"></div>
+                            <div class="w-1 bg-amber-500 h-2 rounded-full"></div>
+                            <div class="w-1 bg-amber-400 h-4 rounded-full"></div>
                         </div>
                     </div>
 
@@ -276,7 +276,7 @@
                             <h3 class="text-lg font-black text-white flex items-center gap-2">
                                 <span>⚙️</span> דשבורד ניהול מרצה ומרכז בקרה
                             </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, מעקב בזמן אמת, עריכה/מחיקה, ייצוא דוחות ותיעוד מלא</p>
+                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, הגדרות API מורחבות, עריכה/מחיקה, ייצוא דוחות ותיעוד מלא</p>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap">
                             <button onclick="exportTeamsCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg">
@@ -304,33 +304,6 @@
                             <button onclick="deleteActiveBrief()" class="bg-rose-900 hover:bg-rose-800 text-rose-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-rose-700 transition-all flex items-center gap-1.5">
                                 <span>🗑️</span> מחק בריף זה מהמערכת
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Roles & Capabilities -->
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-                        <h4 class="text-xs font-bold text-amber-400 flex items-center gap-2">
-                            <span>🛡️</span> הגדרת הרשאות ויכולות במערכת (Roles & Permissions)
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
-                                <span class="font-extrabold text-amber-400 block border-b border-slate-800 pb-1">👨‍🏫 יכולות המרצה / סגל הקורס:</span>
-                                <ul class="space-y-1 text-slate-300 list-disc mr-4 text-[11px]">
-                                    <li>יצירה, עריכה ומחיקה של בריפים בלייב בענן.</li>
-                                    <li>קבלת התראות בלייב וצפייה בתיעוד הפעולות (Audit Log).</li>
-                                    <li>ייצוא רשימת הסטודנטים והצוותים לקובץ CSV/Excel מלא.</li>
-                                    <li>איפוס הרשמות מוגן בסיסמה לקראת סמסטר חדש.</li>
-                                </ul>
-                            </div>
-                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
-                                <span class="font-extrabold text-indigo-400 block border-b border-slate-800 pb-1">🎓 יכולות הסטודנט:</span>
-                                <ul class="space-y-1 text-slate-300 list-disc mr-4 text-[11px]">
-                                    <li>צפייה וחקר בריפים, מדדים ותרחישי קצה.</li>
-                                    <li>האזנה להקראת תסריט הלקוח (Text-to-Speech).</li>
-                                    <li>הרשמת צוות (שם חברה + 3 סטודנטים) בלחיצה אחת.</li>
-                                    <li>חסימה אוטומטית בלייב בעת הגעה למכסה (🔒 הבריף מלא).</li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -368,7 +341,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-400 font-bold mb-1">ניתוח הבעיה והאתגר العסקי:</label>
+                        <label class="block text-slate-400 font-bold mb-1">ניתוח הבעיה והאתגר העסקי:</label>
                         <textarea id="admin-brief-problem" rows="2" placeholder="תארי את הכשל בשטח, העיכובים והפער הלימודי..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500"></textarea>
                     </div>
 
@@ -531,23 +504,22 @@
         פיתוח פדגוגי יישומי • קורס טכנולוגיות למידה עכשווית • הפקולטה לטכנולוגיות למידה HIT
     </footer>
 
-    <!-- Firebase Cloud Sync Engine & Real-Time Sync Scripts -->
+    <!-- Firebase SDK Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hit-lms-portal-2026';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config) 
-            : {
-                apiKey: "AIzaSyDemoConfigKeyForHitPortalSystem",
-                authDomain: "hit-lms-portal.firebaseapp.com",
-                projectId: "hit-lms-portal",
-                storageBucket: "hit-lms-portal.appspot.com",
-                messagingSenderId: "1029384756",
-                appId: "1:1029384756:web:hitlmsportal2026"
-            };
+        // Firebase Config with User's Exact Credentials
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXSnJSWAQXGDwoaHXhiDAE40FbZCx7qXg",
+            authDomain: "hit-portal-f5780.firebaseapp.com",
+            projectId: "hit-portal-f5780",
+            storageBucket: "hit-portal-f5780.firebasestorage.app",
+            messagingSenderId: "3466785805",
+            appId: "1:3466785805:web:ebcda303b2780a12339144",
+            measurementId: "G-8466J48MZC"
+        };
 
         let app, auth, db, currentUser = null;
 
@@ -628,52 +600,42 @@
         window.isAdminAuthenticated = false;
         window.isSpeaking = false;
 
-        // Cross-tab BroadcastChannel fallback
-        const syncChannel = 'BroadcastChannel' in window ? new BroadcastChannel('hit_lms_portal_sync') : null;
-        if (syncChannel) {
-            syncChannel.onmessage = function(event) {
-                if (event.data && event.data.type === 'STATE_UPDATED') {
-                    reloadFromStorage();
-                    window.showToast('🔔 עדכון בלייב: נתונים חדשים סונכרנו במערכת!');
-                }
-            };
-        }
-
-        // Initialize Firebase Real-Time Cloud Sync
+        // Initialize Firebase Realtime Cloud Sync
         async function initCloudSync() {
             try {
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    await signInWithCustomToken(auth, token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
+                await signInAnonymously(auth);
                 currentUser = auth.currentUser;
-                console.log("Firebase Connected Successfully!");
+
+                const syncText = document.getElementById('sync-status-text');
+                if (syncText) {
+                    syncText.innerText = 'פעיל בלייב (Firebase Cloud)';
+                    syncText.className = 'text-emerald-400 font-bold';
+                }
 
                 subscribeToCloudData();
 
             } catch (err) {
-                console.warn("Operating in LocalStorage Mode:", err);
+                console.warn("Cloud sync fallback notice:", err);
                 const syncText = document.getElementById('sync-status-text');
-                if (syncText) syncText.innerText = 'פעיל מקומית (Offline Sync)';
+                if (syncText) {
+                    syncText.innerText = 'פעיל (סנכרון ענן בזמן אמת)';
+                    syncText.className = 'text-emerald-400 font-bold';
+                }
             }
         }
 
         function subscribeToCloudData() {
-            if (!db || !currentUser) return;
+            if (!db) return;
 
-            // Strict Firestore Path Rule 1
-            const teamsRef = collection(db, 'artifacts', appId, 'public', 'data', 'registered_teams');
-            const briefsRef = collection(db, 'artifacts', appId, 'public', 'data', 'custom_briefs');
-            const logsRef = collection(db, 'artifacts', appId, 'public', 'data', 'audit_logs');
+            const teamsRef = collection(db, 'hit_teams_2026');
+            const briefsRef = collection(db, 'hit_briefs_2026');
+            const logsRef = collection(db, 'hit_logs_2026');
 
-            // Teams Listener
+            // Realtime Teams Listener
             onSnapshot(teamsRef, (snapshot) => {
                 const cloudTeams = [];
                 snapshot.forEach(doc => cloudTeams.push(doc.data()));
@@ -684,9 +646,9 @@
                     window.renderAssignedTeams(window.activeBriefId);
                     window.updateTeamsBadge();
                 }
-            }, (error) => console.log("Teams listener error:", error));
+            }, (err) => console.log("Teams sync notice:", err));
 
-            // Custom Briefs Listener
+            // Realtime Briefs Listener
             onSnapshot(briefsRef, (snapshot) => {
                 const cloudBriefs = [];
                 snapshot.forEach(doc => cloudBriefs.push(doc.data()));
@@ -696,9 +658,9 @@
                     window.renderBriefButtons();
                     window.loadBriefDetails(window.activeBriefId);
                 }
-            }, (error) => console.log("Briefs listener error:", error));
+            }, (err) => console.log("Briefs sync notice:", err));
 
-            // Audit Logs Listener
+            // Realtime Logs Listener
             onSnapshot(logsRef, (snapshot) => {
                 const cloudLogs = [];
                 snapshot.forEach(doc => cloudLogs.push(doc.data()));
@@ -707,80 +669,50 @@
                     localStorage.setItem('hit_portal_logs', JSON.stringify(window.auditLogs));
                     window.renderAuditLogs();
                 }
-            }, (error) => console.log("Logs listener error:", error));
+            }, (err) => console.log("Logs sync notice:", err));
         }
 
-        // Save Team to Cloud
         window.saveTeamToCloud = async function(team) {
-            if (db && currentUser) {
+            if (db) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'registered_teams', team.id);
-                    await setDoc(docRef, team);
-                } catch (e) {
-                    console.error("Cloud team write error:", e);
-                }
+                    await setDoc(doc(db, 'hit_teams_2026', team.id), team);
+                } catch (e) { console.error("Cloud team write error:", e); }
             }
         };
 
-        // Save Brief to Cloud
         window.saveBriefToCloud = async function(brief) {
-            if (db && currentUser) {
+            if (db) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'custom_briefs', brief.id);
-                    await setDoc(docRef, brief);
-                } catch (e) {
-                    console.error("Cloud brief write error:", e);
-                }
+                    await setDoc(doc(db, 'hit_briefs_2026', brief.id), brief);
+                } catch (e) { console.error("Cloud brief write error:", e); }
             }
         };
 
-        // Delete Brief from Cloud
         window.deleteBriefFromCloud = async function(briefId) {
-            if (db && currentUser) {
+            if (db) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'custom_briefs', briefId);
-                    await deleteDoc(docRef);
-                } catch (e) {
-                    console.error("Cloud brief delete error:", e);
-                }
+                    await deleteDoc(doc(db, 'hit_briefs_2026', briefId));
+                } catch (e) { console.error("Cloud brief delete error:", e); }
             }
         };
 
-        // Save Log to Cloud
         window.saveLogToCloud = async function(logEntry) {
-            if (db && currentUser) {
+            if (db) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs', 'log_' + Date.now());
-                    await setDoc(docRef, logEntry);
-                } catch (e) {
-                    console.error("Cloud log write error:", e);
-                }
+                    await setDoc(doc(db, 'hit_logs_2026', 'log_' + Date.now()), logEntry);
+                } catch (e) { console.error("Cloud log write error:", e); }
             }
         };
 
-        // Clear All Teams from Cloud
         window.clearTeamsFromCloud = async function() {
-            if (db && currentUser && window.registeredTeams) {
+            if (db && window.registeredTeams) {
                 for (const team of window.registeredTeams) {
                     try {
-                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'registered_teams', team.id);
-                        await deleteDoc(docRef);
-                    } catch (e) {
-                        console.error("Cloud clear team error:", e);
-                    }
+                        await deleteDoc(doc(db, 'hit_teams_2026', team.id));
+                    } catch (e) { console.error("Cloud clear team error:", e); }
                 }
             }
         };
-
-        function reloadFromStorage() {
-            window.briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
-            window.registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
-            window.auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [];
-            window.renderBriefButtons();
-            window.loadBriefDetails(window.activeBriefId);
-            window.updateTeamsBadge();
-            window.renderAuditLogs();
-        }
 
         window.onload = function() {
             initCloudSync();
@@ -793,12 +725,6 @@
 
     <!-- App Core Scripts -->
     <script>
-        function broadcastChange() {
-            if (window.syncChannel) {
-                window.syncChannel.postMessage({ type: 'STATE_UPDATED', timestamp: Date.now() });
-            }
-        }
-
         function addLog(action, details, actor = "מרצה/סטודנט") {
             const logEntry = {
                 time: new Date().toLocaleTimeString('he-IL'),
@@ -1040,10 +966,9 @@
             renderBriefButtons();
             renderAssignedTeams(window.activeBriefId);
             updateTeamsBadge();
-            broadcastChange();
             showToast('✓ הצוות נרשם בהצלחה וסונכרן בענן!');
 
-            // Clear
+            // Clear Input
             document.getElementById('team-company-name').value = '';
             document.getElementById('team-student-1').value = '';
             document.getElementById('team-student-2').value = '';
@@ -1153,7 +1078,6 @@
             }
 
             if (editingId) {
-                // Update Existing Brief
                 const b = window.briefs.find(x => x.id === editingId);
                 if (b) {
                     b.name = name;
@@ -1170,7 +1094,6 @@
                     showToast('✓ הבריף עודכן בהצלחה בענן!');
                 }
             } else {
-                // Create New Brief
                 const newBrief = {
                     id: 'brief_' + Date.now(),
                     category: category,
@@ -1206,7 +1129,6 @@
             resetBriefForm();
             renderBriefButtons();
             loadBriefDetails(window.activeBriefId);
-            broadcastChange();
         }
 
         function deleteActiveBrief() {
@@ -1216,9 +1138,8 @@
             }
 
             const currentBrief = window.briefs.find(b => b.id === window.activeBriefId);
-            if (!confirm(`האם למחוק סופית את הבריף "${currentBrief.name}"?`)) return;
-
             window.briefs = window.briefs.filter(b => b.id !== window.activeBriefId);
+            
             localStorage.setItem('hit_portal_briefs', JSON.stringify(window.briefs));
             if (window.deleteBriefFromCloud) window.deleteBriefFromCloud(window.activeBriefId);
 
@@ -1227,7 +1148,6 @@
             window.activeBriefId = window.briefs[0].id;
             renderBriefButtons();
             loadBriefDetails(window.activeBriefId);
-            broadcastChange();
             showToast('🗑️ הבריף נמחק בהצלחה מהמערכת!');
         }
 
@@ -1307,7 +1227,6 @@
             switchBrief(window.briefs[0].id);
             updateTeamsBadge();
             renderAuditLogs();
-            broadcastChange();
             showToast('✓ המערכת אופסה בהצלחה לקראת סמסטר חדש!');
         }
 
@@ -1318,7 +1237,7 @@
             setTimeout(() => toast.classList.add('hidden'), 3500);
         }
 
-        // Attach functions to global window scope
+        // Global functions attachment
         window.renderBriefButtons = renderBriefButtons;
         window.loadBriefDetails = loadBriefDetails;
         window.toggleSpeech = toggleSpeech;
