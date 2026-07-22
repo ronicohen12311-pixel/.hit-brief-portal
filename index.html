@@ -40,6 +40,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
 
+    <!-- Header -->
     <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 md:px-8 py-3.5">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             
@@ -61,8 +62,8 @@
             <div class="flex items-center gap-3 flex-wrap">
                 <!-- Sync Engine Status Badge -->
                 <div id="sync-status-badge" class="bg-slate-950 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2 pulse-live">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span class="text-slate-300 font-bold">סנכרון ענן: <span id="sync-status-text" class="text-emerald-400">פעיל (Live)</span></span>
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-slate-300 font-bold">סנכרון ענן: <span id="sync-status-text" class="text-emerald-400">פעיל בלייב</span></span>
                 </div>
 
                 <!-- Registered Teams Status -->
@@ -73,7 +74,7 @@
 
                 <!-- Admin Mode Toggle -->
                 <button onclick="toggleAdminMode()" id="admin-mode-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition-all flex items-center gap-2">
-                    <span>⚙️</span> <span id="admin-btn-text">מצב מרצה (ניהול)</span>
+                    <span>🔑</span> <span id="admin-btn-text">כניסה למרצה (ניהול)</span>
                 </button>
             </div>
         </div>
@@ -161,6 +162,7 @@
 
         </aside>
 
+        <!-- Main Workspace View -->
         <section class="lg:col-span-8 space-y-6">
             
             <!-- Student Workspace View -->
@@ -235,7 +237,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 3: Interactive Scenario -->
+                <!-- Tab 3: Scenario Simulator -->
                 <div id="tab-scenario" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                         <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">🎮 סימולטור תרחיש קצה (התנסות ראשונית)</span>
@@ -274,7 +276,7 @@
                             <h3 class="text-lg font-black text-white flex items-center gap-2">
                                 <span>⚙️</span> דשבורד ניהול מרצה ומרכז בקרה
                             </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, מעקב בזמן אמת, ייצוא דוחות ותיעוד מלא</p>
+                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, מעקב בזמן אמת, עריכה/מחיקה, ייצוא דוחות ותיעוד מלא</p>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap">
                             <button onclick="exportTeamsCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg">
@@ -289,7 +291,23 @@
                         </div>
                     </div>
 
-                    <!-- Teacher vs Student Capabilities Matrix -->
+                    <!-- Manage Current Brief Actions (Edit/Delete) -->
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-3">
+                        <div class="text-xs">
+                            <span class="text-slate-400 font-bold">בריף פעיל כעת במערכת: </span>
+                            <span id="admin-current-brief-label" class="text-amber-400 font-extrabold">חברת המשלוחים "זריז"</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="populateFormForEdit()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-extrabold px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5">
+                                <span>✏️</span> טען בריף זה לעריכה
+                            </button>
+                            <button onclick="deleteActiveBrief()" class="bg-rose-900 hover:bg-rose-800 text-rose-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-rose-700 transition-all flex items-center gap-1.5">
+                                <span>🗑️</span> מחק בריף זה מהמערכת
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Roles & Capabilities -->
                     <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
                         <h4 class="text-xs font-bold text-amber-400 flex items-center gap-2">
                             <span>🛡️</span> הגדרת הרשאות ויכולות במערכת (Roles & Permissions)
@@ -298,11 +316,10 @@
                             <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
                                 <span class="font-extrabold text-amber-400 block border-b border-slate-800 pb-1">👨‍🏫 יכולות המרצה / סגל הקורס:</span>
                                 <ul class="space-y-1 text-slate-300 list-disc mr-4 text-[11px]">
-                                    <li>יצירת בריפים חדשים ועריכת בריפים קיימים.</li>
+                                    <li>יצירה, עריכה ומחיקה של בריפים בלייב בענן.</li>
                                     <li>קבלת התראות בלייב וצפייה בתיעוד הפעולות (Audit Log).</li>
-                                    <li>ייצוא רשימת הסטודנטים והצוותים לקובץ CSV/Excel.</li>
-                                    <li>איפוס הרשמות לקראת סמסטר חדש או ייצוא גיבוי קונפיגורציה.</li>
-                                    <li>הגדרת מגבלת קיבולת צוותים לבריף (ברירת מחדל: 2 צוותים).</li>
+                                    <li>ייצוא רשימת הסטודנטים והצוותים לקובץ CSV/Excel מלא.</li>
+                                    <li>איפוס הרשמות מוגן בסיסמה לקראת סמסטר חדש.</li>
                                 </ul>
                             </div>
                             <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
@@ -310,42 +327,22 @@
                                 <ul class="space-y-1 text-slate-300 list-disc mr-4 text-[11px]">
                                     <li>צפייה וחקר בריפים, מדדים ותרחישי קצה.</li>
                                     <li>האזנה להקראת תסריט הלקוח (Text-to-Speech).</li>
-                                    <li>הרשמת צוות (שם חברה + 3 סטודנטים) לבריף פתוח.</li>
-                                    <li>צפייה בלייב בצוותים האחרים שנרשמו לבריף.</li>
-                                    <li>חסימה אוטומטית בעת הגעה למכסת הצוותים (🔒 הבריף מלא).</li>
+                                    <li>הרשמת צוות (שם חברה + 3 סטודנטים) בלחיצה אחת.</li>
+                                    <li>חסימה אוטומטית בלייב בעת הגעה למכסה (🔒 הבריף מלא).</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Backend Infrastructure Architecture Card -->
-                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                    <h4 class="font-bold text-amber-400 text-sm flex items-center gap-2">
-                        <span>☁️</span> ארכיטקטורת הסנכרון וה-Backend מאחורי הקלעים
-                    </h4>
-                    <p class="text-xs text-slate-300 leading-relaxed">
-                        כדי שהמערכת תתעדכן **בלייב בזמן אמת** אצל כל הסטודנטים והמרצה במקביל, הנתונים מסתנכרנים דרך מנגנון ענן מרכזי:
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                            <span class="text-emerald-400 font-bold block">1. Realtime Database</span>
-                            <p class="text-[11px] text-slate-400">סנכרון מיידי דרך WebSockets / Firebase / Supabase. ברגע שצוות נרשם – כל הניידים בכיתה מתעדכנים.</p>
-                        </div>
-                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                            <span class="text-amber-400 font-bold block">2. Push & Webhooks</span>
-                            <p class="text-[11px] text-slate-400">שליחת התראה אוטומטית למרצה (Email / Telegram Bot / Moodle Notification) עם כל הרשמת צוות חדשה.</p>
-                        </div>
-                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1">
-                            <span class="text-indigo-400 font-bold block">3. Audit Log & Persistence</span>
-                            <p class="text-[11px] text-slate-400">תיעוד מלא ובלתי פתיר של כל פעולה, זמן הרשמה, כתובת IP וזהות הסטודנט למניעת חריגות.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Brief Creation Form -->
+                <!-- Brief Creation / Editing Form -->
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 text-xs">
-                    <h4 class="font-bold text-amber-400 text-sm">הוספת / עריכת בריף לקוח חדש במערכת:</h4>
+                    <div class="flex justify-between items-center">
+                        <h4 id="form-mode-title" class="font-bold text-amber-400 text-sm">הוספת / עריכת בריף לקוח במערכת:</h4>
+                        <button onclick="resetBriefForm()" id="cancel-edit-btn" class="hidden text-slate-400 hover:text-white text-xs underline">ביטול עריכה (חזרה ליצירת חדש)</button>
+                    </div>
+                    <input type="hidden" id="admin-brief-editing-id" value="">
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-slate-400 font-bold mb-1">שם חברה/לקוח:</label>
@@ -371,12 +368,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-slate-400 font-bold mb-1">ניתוח הבעיה והאתגר העסקי:</label>
+                        <label class="block text-slate-400 font-bold mb-1">ניתוח הבעיה והאתגר العסקי:</label>
                         <textarea id="admin-brief-problem" rows="2" placeholder="תארי את הכשל בשטח, העיכובים והפער הלימודי..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500"></textarea>
                     </div>
 
-                    <button onclick="saveNewBrief()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-5 rounded-xl transition-all flex items-center gap-2">
-                        <span>➕</span> שמירת בריף חדש במערכת הקורס
+                    <button onclick="saveBriefForm()" id="save-brief-submit-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-5 rounded-xl transition-all flex items-center gap-2">
+                        <span>💾</span> שמירת בריף במערכת הקורס
                     </button>
                 </div>
 
@@ -421,6 +418,36 @@
                 </h3>
                 <button onclick="closeRegisterModal()" class="text-slate-400 hover:text-white font-bold">✕</button>
             </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-amber-400 font-bold mb-1">שם החברה (זהות הצוות):</label>
+                    <input id="team-company-name" type="text" placeholder="למשל: SkyTech / DroneWise" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-bold mb-1">שם סטודנט/ית 1 (ראש צוות):</label>
+                    <input id="team-student-1" type="text" placeholder="שם מלא" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-bold mb-1">שם סטודנט/ית 2:</label>
+                    <input id="team-student-2" type="text" placeholder="שם מלא" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-bold mb-1">שם סטודנט/ית 3:</label>
+                    <input id="team-student-3" type="text" placeholder="שם מלא (אופציונלי)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeRegisterModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-3 rounded-xl">
+                    ביטול
+                </button>
+                <button onclick="submitTeamRegistration()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs py-3 rounded-xl transition-all shadow-lg">
+                    ✓ אישור הרשמה בלייב
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Admin Authentication Modal (PROTECTED LOGIN) -->
     <div id="admin-login-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -504,8 +531,27 @@
         פיתוח פדגוגי יישומי • קורס טכנולוגיות למידה עכשווית • הפקולטה לטכנולוגיות למידה HIT
     </footer>
 
-    <script>
-        // Initial Database Briefs
+    <!-- Firebase Cloud Sync Engine & Real-Time Sync Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hit-lms-portal-2026';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyDemoConfigKeyForHitPortalSystem",
+                authDomain: "hit-lms-portal.firebaseapp.com",
+                projectId: "hit-lms-portal",
+                storageBucket: "hit-lms-portal.appspot.com",
+                messagingSenderId: "1029384756",
+                appId: "1:1029384756:web:hitlmsportal2026"
+            };
+
+        let app, auth, db, currentUser = null;
+
+        // Default Initial Briefs
         const initialBriefs = [
             {
                 id: "zariz",
@@ -571,53 +617,185 @@
             }
         ];
 
-        // Global State Engine
-        let briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
-        let registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
-        let auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [
+        window.briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
+        window.registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
+        window.auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [
             { time: new Date().toLocaleTimeString('he-IL'), action: "SYSTEM_INIT", details: "אנהול מערכת סמסטריאלית - פורטל בריפים", actor: "מערכת LMS" }
         ];
 
-        let activeBriefId = briefs[0].id;
-        let isAdminMode = false;
-        let isAdminAuthenticated = false; // Auth status flag
-        let isSpeaking = false;
+        window.activeBriefId = window.briefs[0].id;
+        window.isAdminMode = false;
+        window.isAdminAuthenticated = false;
+        window.isSpeaking = false;
 
-        // BroadcastChannel for Live Cross-Tab Sync Simulation
-        const syncChannel = 'speechSynthesis' in window && window.BroadcastChannel 
-            ? new BroadcastChannel('hit_lms_portal_sync') 
-            : null;
-
+        // Cross-tab BroadcastChannel fallback
+        const syncChannel = 'BroadcastChannel' in window ? new BroadcastChannel('hit_lms_portal_sync') : null;
         if (syncChannel) {
             syncChannel.onmessage = function(event) {
                 if (event.data && event.data.type === 'STATE_UPDATED') {
-                    reloadStateFromStorage();
-                    showToast('🔔 עדכון בלייב: צוות חדש נרשם זה עתה במערכת!');
+                    reloadFromStorage();
+                    window.showToast('🔔 עדכון בלייב: נתונים חדשים סונכרנו במערכת!');
                 }
             };
         }
 
-        // Initialize App
-        window.onload = function() {
-            renderBriefButtons();
-            loadBriefDetails(activeBriefId);
-            updateTeamsBadge();
-            renderAuditLogs();
-        };
+        // Initialize Firebase Real-Time Cloud Sync
+        async function initCloudSync() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-        function reloadStateFromStorage() {
-            briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
-            registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
-            auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [];
-            renderBriefButtons();
-            loadBriefDetails(activeBriefId);
-            updateTeamsBadge();
-            renderAuditLogs();
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                currentUser = auth.currentUser;
+                console.log("Firebase Connected Successfully!");
+
+                subscribeToCloudData();
+
+            } catch (err) {
+                console.warn("Operating in LocalStorage Mode:", err);
+                const syncText = document.getElementById('sync-status-text');
+                if (syncText) syncText.innerText = 'פעיל מקומית (Offline Sync)';
+            }
         }
 
+        function subscribeToCloudData() {
+            if (!db || !currentUser) return;
+
+            // Strict Firestore Path Rule 1
+            const teamsRef = collection(db, 'artifacts', appId, 'public', 'data', 'registered_teams');
+            const briefsRef = collection(db, 'artifacts', appId, 'public', 'data', 'custom_briefs');
+            const logsRef = collection(db, 'artifacts', appId, 'public', 'data', 'audit_logs');
+
+            // Teams Listener
+            onSnapshot(teamsRef, (snapshot) => {
+                const cloudTeams = [];
+                snapshot.forEach(doc => cloudTeams.push(doc.data()));
+                if (cloudTeams.length > 0) {
+                    window.registeredTeams = cloudTeams;
+                    localStorage.setItem('hit_portal_teams', JSON.stringify(window.registeredTeams));
+                    window.renderBriefButtons();
+                    window.renderAssignedTeams(window.activeBriefId);
+                    window.updateTeamsBadge();
+                }
+            }, (error) => console.log("Teams listener error:", error));
+
+            // Custom Briefs Listener
+            onSnapshot(briefsRef, (snapshot) => {
+                const cloudBriefs = [];
+                snapshot.forEach(doc => cloudBriefs.push(doc.data()));
+                if (cloudBriefs.length > 0) {
+                    window.briefs = cloudBriefs;
+                    localStorage.setItem('hit_portal_briefs', JSON.stringify(window.briefs));
+                    window.renderBriefButtons();
+                    window.loadBriefDetails(window.activeBriefId);
+                }
+            }, (error) => console.log("Briefs listener error:", error));
+
+            // Audit Logs Listener
+            onSnapshot(logsRef, (snapshot) => {
+                const cloudLogs = [];
+                snapshot.forEach(doc => cloudLogs.push(doc.data()));
+                if (cloudLogs.length > 0) {
+                    window.auditLogs = cloudLogs;
+                    localStorage.setItem('hit_portal_logs', JSON.stringify(window.auditLogs));
+                    window.renderAuditLogs();
+                }
+            }, (error) => console.log("Logs listener error:", error));
+        }
+
+        // Save Team to Cloud
+        window.saveTeamToCloud = async function(team) {
+            if (db && currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'registered_teams', team.id);
+                    await setDoc(docRef, team);
+                } catch (e) {
+                    console.error("Cloud team write error:", e);
+                }
+            }
+        };
+
+        // Save Brief to Cloud
+        window.saveBriefToCloud = async function(brief) {
+            if (db && currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'custom_briefs', brief.id);
+                    await setDoc(docRef, brief);
+                } catch (e) {
+                    console.error("Cloud brief write error:", e);
+                }
+            }
+        };
+
+        // Delete Brief from Cloud
+        window.deleteBriefFromCloud = async function(briefId) {
+            if (db && currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'custom_briefs', briefId);
+                    await deleteDoc(docRef);
+                } catch (e) {
+                    console.error("Cloud brief delete error:", e);
+                }
+            }
+        };
+
+        // Save Log to Cloud
+        window.saveLogToCloud = async function(logEntry) {
+            if (db && currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'audit_logs', 'log_' + Date.now());
+                    await setDoc(docRef, logEntry);
+                } catch (e) {
+                    console.error("Cloud log write error:", e);
+                }
+            }
+        };
+
+        // Clear All Teams from Cloud
+        window.clearTeamsFromCloud = async function() {
+            if (db && currentUser && window.registeredTeams) {
+                for (const team of window.registeredTeams) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'registered_teams', team.id);
+                        await deleteDoc(docRef);
+                    } catch (e) {
+                        console.error("Cloud clear team error:", e);
+                    }
+                }
+            }
+        };
+
+        function reloadFromStorage() {
+            window.briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
+            window.registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
+            window.auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [];
+            window.renderBriefButtons();
+            window.loadBriefDetails(window.activeBriefId);
+            window.updateTeamsBadge();
+            window.renderAuditLogs();
+        }
+
+        window.onload = function() {
+            initCloudSync();
+            window.renderBriefButtons();
+            window.loadBriefDetails(window.activeBriefId);
+            window.updateTeamsBadge();
+            window.renderAuditLogs();
+        };
+    </script>
+
+    <!-- App Core Scripts -->
+    <script>
         function broadcastChange() {
-            if (syncChannel) {
-                syncChannel.postMessage({ type: 'STATE_UPDATED', timestamp: Date.now() });
+            if (window.syncChannel) {
+                window.syncChannel.postMessage({ type: 'STATE_UPDATED', timestamp: Date.now() });
             }
         }
 
@@ -628,8 +806,9 @@
                 details: details,
                 actor: actor
             };
-            auditLogs.unshift(logEntry);
-            localStorage.setItem('hit_portal_logs', JSON.stringify(auditLogs));
+            window.auditLogs.unshift(logEntry);
+            localStorage.setItem('hit_portal_logs', JSON.stringify(window.auditLogs));
+            if (window.saveLogToCloud) window.saveLogToCloud(logEntry);
             renderAuditLogs();
         }
 
@@ -638,8 +817,8 @@
             const countTag = document.getElementById('logs-count-tag');
             if (!container) return;
 
-            countTag.innerText = `${auditLogs.length} אירועים מתועדים`;
-            container.innerHTML = auditLogs.map(log => `
+            countTag.innerText = `${window.auditLogs.length} אירועים מתועדים`;
+            container.innerHTML = window.auditLogs.map(log => `
                 <tr class="hover:bg-slate-900/60 transition-colors">
                     <td class="p-3 font-mono text-[10px] text-slate-400">${log.time}</td>
                     <td class="p-3"><span class="bg-slate-800 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold">${log.action}</span></td>
@@ -651,12 +830,13 @@
 
         function renderBriefButtons() {
             const container = document.getElementById('briefs-buttons-container');
+            if (!container) return;
             container.innerHTML = '';
 
-            briefs.forEach(b => {
-                const teamsCount = registeredTeams.filter(t => t.briefId === b.id).length;
+            window.briefs.forEach(b => {
+                const teamsCount = window.registeredTeams.filter(t => t.briefId === b.id).length;
                 const isFull = teamsCount >= 2;
-                const isSelected = b.id === activeBriefId;
+                const isSelected = b.id === window.activeBriefId;
 
                 const btn = document.createElement('button');
                 btn.onclick = () => switchBrief(b.id);
@@ -680,14 +860,14 @@
         }
 
         function switchBrief(id) {
-            activeBriefId = id;
-            if (isSpeaking) window.speechSynthesis.cancel();
+            window.activeBriefId = id;
+            if (window.isSpeaking && 'speechSynthesis' in window) window.speechSynthesis.cancel();
             renderBriefButtons();
             loadBriefDetails(id);
         }
 
         function loadBriefDetails(id) {
-            const b = briefs.find(x => x.id === id);
+            const b = window.briefs.find(x => x.id === id);
             if (!b) return;
 
             document.getElementById('client-category').innerText = b.category;
@@ -698,47 +878,52 @@
             document.getElementById('client-target').innerText = b.target;
             document.getElementById('audio-transcript').innerText = `"${b.audio}"`;
             document.getElementById('problem-desc').innerText = b.problem;
+            
+            const currentLabel = document.getElementById('admin-current-brief-label');
+            if (currentLabel) currentLabel.innerText = b.name;
 
-            // Update Lists
+            // Lists
             const wrongList = document.getElementById('wrong-behaviors-list');
-            wrongList.innerHTML = b.wrongBehaviors.map(item => `<li>${item}</li>`).join('');
+            wrongList.innerHTML = (b.wrongBehaviors || []).map(item => `<li>${item}</li>`).join('');
 
             const rightList = document.getElementById('right-behaviors-list');
-            rightList.innerHTML = b.rightBehaviors.map(item => `<li>${item}</li>`).join('');
+            rightList.innerHTML = (b.rightBehaviors || []).map(item => `<li>${item}</li>`).join('');
 
             // Metrics
-            document.getElementById('metric-val-1').innerText = b.metrics.delay;
-            document.getElementById('metric-val-2').innerText = b.metrics.loss;
-            document.getElementById('metric-val-3').innerText = b.metrics.target;
+            document.getElementById('metric-val-1').innerText = b.metrics ? b.metrics.delay : "25%";
+            document.getElementById('metric-val-2').innerText = b.metrics ? b.metrics.loss : "₪50,000";
+            document.getElementById('metric-val-3').innerText = b.metrics ? b.metrics.target : "40%";
 
             // Scenario
-            document.getElementById('scenario-title').innerText = b.scenario.title;
-            document.getElementById('scenario-text').innerText = b.scenario.text;
-            
-            const optionsContainer = document.getElementById('scenario-options');
-            optionsContainer.innerHTML = '';
-            const feedbackBox = document.getElementById('scenario-feedback');
-            feedbackBox.className = 'hidden';
+            if (b.scenario) {
+                document.getElementById('scenario-title').innerText = b.scenario.title;
+                document.getElementById('scenario-text').innerText = b.scenario.text;
+                
+                const optionsContainer = document.getElementById('scenario-options');
+                optionsContainer.innerHTML = '';
+                const feedbackBox = document.getElementById('scenario-feedback');
+                feedbackBox.className = 'hidden';
 
-            b.scenario.options.forEach((opt) => {
-                const optBtn = document.createElement('button');
-                optBtn.className = "w-full text-right p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs text-slate-200 transition-all";
-                optBtn.innerText = opt.text;
-                optBtn.onclick = () => {
-                    feedbackBox.classList.remove('hidden');
-                    feedbackBox.innerText = opt.feedback;
-                    feedbackBox.className = opt.correct 
-                        ? 'p-3 rounded-xl text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800' 
-                        : 'p-3 rounded-xl text-xs font-bold bg-rose-950 text-rose-300 border border-rose-800';
-                };
-                optionsContainer.appendChild(optBtn);
-            });
+                (b.scenario.options || []).forEach((opt) => {
+                    const optBtn = document.createElement('button');
+                    optBtn.className = "w-full text-right p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs text-slate-200 transition-all";
+                    optBtn.innerText = opt.text;
+                    optBtn.onclick = () => {
+                        feedbackBox.classList.remove('hidden');
+                        feedbackBox.innerText = opt.feedback;
+                        feedbackBox.className = opt.correct 
+                            ? 'p-3 rounded-xl text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800' 
+                            : 'p-3 rounded-xl text-xs font-bold bg-rose-950 text-rose-300 border border-rose-800';
+                    };
+                    optionsContainer.appendChild(optBtn);
+                });
+            }
 
             renderAssignedTeams(id);
         }
 
         function toggleSpeech() {
-            const b = briefs.find(x => x.id === activeBriefId);
+            const b = window.briefs.find(x => x.id === window.activeBriefId);
             const btn = document.getElementById('audio-play-btn');
 
             if (!('speechSynthesis' in window)) {
@@ -746,9 +931,9 @@
                 return;
             }
 
-            if (isSpeaking) {
+            if (window.isSpeaking) {
                 window.speechSynthesis.cancel();
-                isSpeaking = false;
+                window.isSpeaking = false;
                 btn.innerText = '▶';
             } else {
                 window.speechSynthesis.cancel();
@@ -757,12 +942,12 @@
                 utterance.rate = 0.95;
 
                 utterance.onstart = () => {
-                    isSpeaking = true;
+                    window.isSpeaking = true;
                     btn.innerText = '❚❚';
                 };
 
                 utterance.onend = () => {
-                    isSpeaking = false;
+                    window.isSpeaking = false;
                     btn.innerText = '▶';
                 };
 
@@ -787,7 +972,7 @@
 
         function renderAssignedTeams(briefId) {
             const teamsList = document.getElementById('assigned-teams-list');
-            const briefTeams = registeredTeams.filter(t => t.briefId === briefId);
+            const briefTeams = window.registeredTeams.filter(t => t.briefId === briefId);
             const capacityTag = document.getElementById('teams-capacity-tag');
 
             const remaining = 2 - briefTeams.length;
@@ -813,7 +998,7 @@
         }
 
         function openRegisterModal() {
-            const briefTeams = registeredTeams.filter(t => t.briefId === activeBriefId);
+            const briefTeams = window.registeredTeams.filter(t => t.briefId === window.activeBriefId);
             if (briefTeams.length >= 2) {
                 showToast('🔒 בריף זה מלא (הגיע למכסת 2 הצוותים)');
                 return;
@@ -838,26 +1023,27 @@
 
             const newTeam = {
                 id: 'team_' + Date.now(),
-                briefId: activeBriefId,
+                briefId: window.activeBriefId,
                 companyName: companyName,
                 students: [s1, s2, s3].filter(Boolean),
                 registeredAt: new Date().toLocaleTimeString('he-IL') + ' ' + new Date().toLocaleDateString('he-IL')
             };
 
-            registeredTeams.push(newTeam);
-            localStorage.setItem('hit_portal_teams', JSON.stringify(registeredTeams));
+            window.registeredTeams.push(newTeam);
+            localStorage.setItem('hit_portal_teams', JSON.stringify(window.registeredTeams));
+            if (window.saveTeamToCloud) window.saveTeamToCloud(newTeam);
 
-            const activeBrief = briefs.find(b => b.id === activeBriefId);
+            const activeBrief = window.briefs.find(b => b.id === window.activeBriefId);
             addLog("TEAM_REGISTERED", `צוות "${companyName}" נרשם לבריף ${activeBrief.name}`, s1);
 
             closeRegisterModal();
             renderBriefButtons();
-            renderAssignedTeams(activeBriefId);
+            renderAssignedTeams(window.activeBriefId);
             updateTeamsBadge();
             broadcastChange();
             showToast('✓ הצוות נרשם בהצלחה וסונכרן בענן!');
 
-            // Clear inputs
+            // Clear
             document.getElementById('team-company-name').value = '';
             document.getElementById('team-student-1').value = '';
             document.getElementById('team-student-2').value = '';
@@ -865,13 +1051,12 @@
         }
 
         function updateTeamsBadge() {
-            document.getElementById('registered-teams-count').innerText = registeredTeams.length;
+            document.getElementById('registered-teams-count').innerText = window.registeredTeams.length;
         }
 
         function toggleAdminMode() {
-            if (!isAdminMode) {
-                // If trying to enter admin mode and not authenticated yet, open login modal
-                if (!isAdminAuthenticated) {
+            if (!window.isAdminMode) {
+                if (!window.isAdminAuthenticated) {
                     openAdminLoginModal();
                     return;
                 }
@@ -896,7 +1081,7 @@
             const pass = document.getElementById('admin-password-input').value.trim();
 
             if (user === 'admin' && pass === 'hit2026') {
-                isAdminAuthenticated = true;
+                window.isAdminAuthenticated = true;
                 closeAdminLoginModal();
                 enterAdminPanel();
                 showToast('🔑 התחברת בהצלחה כמנהל המערכת!');
@@ -906,7 +1091,7 @@
         }
 
         function enterAdminPanel() {
-            isAdminMode = true;
+            window.isAdminMode = true;
             document.getElementById('student-view-panel').classList.add('hidden');
             document.getElementById('admin-view-panel').classList.remove('hidden');
             document.getElementById('admin-btn-text').innerText = 'יציאה ממצב מרצה';
@@ -914,13 +1099,47 @@
         }
 
         function exitAdminPanel() {
-            isAdminMode = false;
+            window.isAdminMode = false;
             document.getElementById('admin-view-panel').classList.add('hidden');
             document.getElementById('student-view-panel').classList.remove('hidden');
-            document.getElementById('admin-btn-text').innerText = 'מצב מרצה (ניהול)';
+            document.getElementById('admin-btn-text').innerText = 'כניסה למרצה (ניהול)';
         }
 
-        function saveNewBrief() {
+        function populateFormForEdit() {
+            const b = window.briefs.find(x => x.id === window.activeBriefId);
+            if (!b) return;
+
+            document.getElementById('admin-brief-editing-id').value = b.id;
+            document.getElementById('admin-brief-name').value = b.name;
+            document.getElementById('admin-brief-icon').value = b.icon;
+            document.getElementById('admin-brief-category').value = b.category;
+            document.getElementById('admin-brief-contact').value = b.contact;
+            document.getElementById('admin-brief-audio').value = b.audio;
+            document.getElementById('admin-brief-problem').value = b.problem;
+
+            document.getElementById('form-mode-title').innerText = `עריכת בריף קיים: ${b.name}`;
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            document.getElementById('save-brief-submit-btn').innerHTML = `<span>✏️</span> עדכון בריף קיים בענן`;
+            
+            showToast('✏️ פרטי הבריף נטענו לטופס העריכה');
+        }
+
+        function resetBriefForm() {
+            document.getElementById('admin-brief-editing-id').value = '';
+            document.getElementById('admin-brief-name').value = '';
+            document.getElementById('admin-brief-icon').value = '';
+            document.getElementById('admin-brief-category').value = '';
+            document.getElementById('admin-brief-contact').value = '';
+            document.getElementById('admin-brief-audio').value = '';
+            document.getElementById('admin-brief-problem').value = '';
+
+            document.getElementById('form-mode-title').innerText = 'הוספת / עריכת בריף לקוח במערכת:';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            document.getElementById('save-brief-submit-btn').innerHTML = `<span>💾</span> שמירת בריף במערכת הקורס`;
+        }
+
+        function saveBriefForm() {
+            const editingId = document.getElementById('admin-brief-editing-id').value;
             const name = document.getElementById('admin-brief-name').value.trim();
             const icon = document.getElementById('admin-brief-icon').value.trim() || '💼';
             const category = document.getElementById('admin-brief-category').value.trim() || 'מערך הדרכה';
@@ -933,42 +1152,87 @@
                 return;
             }
 
-            const newBrief = {
-                id: 'brief_' + Date.now(),
-                category: category,
-                name: name,
-                contact: contact,
-                icon: icon,
-                urgency: "🚨 גבוהה",
-                target: "עובדי שטח ומנהלים",
-                audio: audio || "פנייה קולית חדשה מהלקוח...",
-                problem: problem,
-                wrongBehaviors: ["ביצוע שגוי של תהליכים בשטח.", "חוסר אחידות בנוהל."],
-                rightBehaviors: ["פתיחת כלי דיגיטלי בתוך 10 שניות.", "סגירת אירוע תפעולי."],
-                metrics: { delay: "25%", loss: "₪50,000", target: "35%" },
-                scenario: {
-                    title: "תרחיש קצה ראשוני",
-                    text: "הדגמת תרחיש קצה עבור הבריף החדש.",
-                    options: [
-                        { text: "פעולה א' שגויה", correct: false, feedback: "❌ פעולה זו אינה תואמת נוהל." },
-                        { text: "פעולה ב' נכונה", correct: true, feedback: "✓ מצוין! פעולה זו חוסכת עיכוב." }
-                    ]
-                }
-            };
+            if (editingId) {
+                // Update Existing Brief
+                const b = window.briefs.find(x => x.id === editingId);
+                if (b) {
+                    b.name = name;
+                    b.icon = icon;
+                    b.category = category;
+                    b.contact = contact;
+                    b.audio = audio || "פנייה קולית מעודכנת...";
+                    b.problem = problem;
 
-            briefs.push(newBrief);
-            localStorage.setItem('hit_portal_briefs', JSON.stringify(briefs));
-            addLog("BRIEF_CREATED", `נוצר בריף חדש במערכת: ${name}`, "מרצה הקורס");
-            
+                    localStorage.setItem('hit_portal_briefs', JSON.stringify(window.briefs));
+                    if (window.saveBriefToCloud) window.saveBriefToCloud(b);
+
+                    addLog("BRIEF_UPDATED", `עודכן בריף במערכת: ${name}`, "מרצה הקורס");
+                    showToast('✓ הבריף עודכן בהצלחה בענן!');
+                }
+            } else {
+                // Create New Brief
+                const newBrief = {
+                    id: 'brief_' + Date.now(),
+                    category: category,
+                    name: name,
+                    contact: contact,
+                    icon: icon,
+                    urgency: "🚨 גבוהה",
+                    target: "עובדי שטח ומנהלים",
+                    audio: audio || "פנייה קולית חדשה מהלקוח...",
+                    problem: problem,
+                    wrongBehaviors: ["ביצוע שגוי של תהליכים בשטח.", "חוסר אחידות בנוהל."],
+                    rightBehaviors: ["פתיחת כלי דיגיטלי בתוך 10 שניות.", "סגירת אירוע תפעולי."],
+                    metrics: { delay: "25%", loss: "₪50,000", target: "35%" },
+                    scenario: {
+                        title: "תרחיש קצה ראשוני",
+                        text: "הדגמת תרחיש קצה עבור הבריף החדש.",
+                        options: [
+                            { text: "פעולה א' שגויה", correct: false, feedback: "❌ פעולה זו אינה תואמת נוהל." },
+                            { text: "פעולה ב' נכונה", correct: true, feedback: "✓ מצוין! פעולה זו חוסכת עיכוב." }
+                        ]
+                    }
+                };
+
+                window.briefs.push(newBrief);
+                localStorage.setItem('hit_portal_briefs', JSON.stringify(window.briefs));
+                if (window.saveBriefToCloud) window.saveBriefToCloud(newBrief);
+
+                addLog("BRIEF_CREATED", `נוצר בריף חדש במערכת: ${name}`, "מרצה הקורס");
+                window.activeBriefId = newBrief.id;
+                showToast('✓ הבריף החדש נשמר בהצלחה בענן!');
+            }
+
+            resetBriefForm();
             renderBriefButtons();
-            switchBrief(newBrief.id);
-            toggleAdminMode();
+            loadBriefDetails(window.activeBriefId);
             broadcastChange();
-            showToast('✓ הבריף החדש נשמר בהצלחה במערכת!');
+        }
+
+        function deleteActiveBrief() {
+            if (window.briefs.length <= 1) {
+                showToast('❌ חייב להישאר לפחות בריף אחד במערכת!');
+                return;
+            }
+
+            const currentBrief = window.briefs.find(b => b.id === window.activeBriefId);
+            if (!confirm(`האם למחוק סופית את הבריף "${currentBrief.name}"?`)) return;
+
+            window.briefs = window.briefs.filter(b => b.id !== window.activeBriefId);
+            localStorage.setItem('hit_portal_briefs', JSON.stringify(window.briefs));
+            if (window.deleteBriefFromCloud) window.deleteBriefFromCloud(window.activeBriefId);
+
+            addLog("BRIEF_DELETED", `נמחק בריף מהמערכת: ${currentBrief.name}`, "מרצה הקורס");
+
+            window.activeBriefId = window.briefs[0].id;
+            renderBriefButtons();
+            loadBriefDetails(window.activeBriefId);
+            broadcastChange();
+            showToast('🗑️ הבריף נמחק בהצלחה מהמערכת!');
         }
 
         function exportTeamsCSV() {
-            if (registeredTeams.length === 0) {
+            if (window.registeredTeams.length === 0) {
                 showToast('❌ אין צוותים רשומים לייצוא');
                 return;
             }
@@ -976,8 +1240,8 @@
             let csvContent = "\uFEFF"; // UTF-8 BOM for Hebrew Excel
             csvContent += "מזהה בריף,שם הבריף,שם החברה (צוות),תאריך ושעת הרשמה,סטודנט 1,סטודנט 2,סטודנט 3\n";
 
-            registeredTeams.forEach(t => {
-                const brief = briefs.find(b => b.id === t.briefId);
+            window.registeredTeams.forEach(t => {
+                const brief = window.briefs.find(b => b.id === t.briefId);
                 const briefName = brief ? brief.name.replace(/"/g, '""') : t.briefId;
                 const company = t.companyName.replace(/"/g, '""');
                 const s1 = (t.students[0] || '').replace(/"/g, '""');
@@ -1000,7 +1264,7 @@
         }
 
         function exportSystemJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ briefs, registeredTeams, auditLogs }, null, 2));
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ briefs: window.briefs, registeredTeams: window.registeredTeams, auditLogs: window.auditLogs }, null, 2));
             const link = document.createElement('a');
             link.setAttribute("href", dataStr);
             link.setAttribute("download", `hit_portal_full_backup_${Date.now()}.json`);
@@ -1027,21 +1291,20 @@
                 return;
             }
 
-            localStorage.removeItem('hit_portal_briefs');
+            if (window.clearTeamsFromCloud) window.clearTeamsFromCloud();
+
             localStorage.removeItem('hit_portal_teams');
             localStorage.removeItem('hit_portal_logs');
 
-            briefs = initialBriefs;
-            registeredTeams = [];
-            auditLogs = [{ time: new Date().toLocaleTimeString('he-IL'), action: "SEMESTER_RESET", details: "איפוס סמסטריאלי מוגן - מערכת מוכנה לסמסטר חדש", actor: "מרצה הקורס" }];
+            window.registeredTeams = [];
+            window.auditLogs = [{ time: new Date().toLocaleTimeString('he-IL'), action: "SEMESTER_RESET", details: "איפוס סמסטריאלי מוגן - מערכת מוכנה לסמסטר חדש", actor: "מרצה הקורס" }];
 
-            localStorage.setItem('hit_portal_briefs', JSON.stringify(briefs));
-            localStorage.setItem('hit_portal_teams', JSON.stringify(registeredTeams));
-            localStorage.setItem('hit_portal_logs', JSON.stringify(auditLogs));
+            localStorage.setItem('hit_portal_teams', JSON.stringify(window.registeredTeams));
+            localStorage.setItem('hit_portal_logs', JSON.stringify(window.auditLogs));
 
             closeResetModal();
             renderBriefButtons();
-            switchBrief(briefs[0].id);
+            switchBrief(window.briefs[0].id);
             updateTeamsBadge();
             renderAuditLogs();
             broadcastChange();
@@ -1054,6 +1317,30 @@
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3500);
         }
+
+        // Attach functions to global window scope
+        window.renderBriefButtons = renderBriefButtons;
+        window.loadBriefDetails = loadBriefDetails;
+        window.toggleSpeech = toggleSpeech;
+        window.showTab = showTab;
+        window.renderAssignedTeams = renderAssignedTeams;
+        window.openRegisterModal = openRegisterModal;
+        window.closeRegisterModal = closeRegisterModal;
+        window.submitTeamRegistration = submitTeamRegistration;
+        window.updateTeamsBadge = updateTeamsBadge;
+        window.toggleAdminMode = toggleAdminMode;
+        window.closeAdminLoginModal = closeAdminLoginModal;
+        window.submitAdminLogin = submitAdminLogin;
+        window.populateFormForEdit = populateFormForEdit;
+        window.resetBriefForm = resetBriefForm;
+        window.saveBriefForm = saveBriefForm;
+        window.deleteActiveBrief = deleteActiveBrief;
+        window.exportTeamsCSV = exportTeamsCSV;
+        window.exportSystemJSON = exportSystemJSON;
+        window.triggerSemesterResetModal = triggerSemesterResetModal;
+        window.closeResetModal = closeResetModal;
+        window.executeSemesterReset = executeSemesterReset;
+        window.showToast = showToast;
     </script>
 </body>
 </html>
