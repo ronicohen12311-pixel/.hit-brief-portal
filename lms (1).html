@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פורטל תיקי לקוח אינטראקטיביים • HIT LMS System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        .tab-active {
+            border-bottom: 3px solid #f59e0b;
+            color: #fbbf24;
+            background-color: rgba(245, 158, 11, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .pulse-live {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+
+    <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 px-4 md:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <!-- Branding -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-tr from-amber-500 to-amber-300 rounded-2xl flex items-center justify-center font-black text-slate-950 text-xl shadow-lg">
+                    💼
+                </div>
+                <div>
+                    <h1 class="text-base md:text-lg font-extrabold text-white flex items-center gap-2">
+                        <span>טכנולוגיות למידה עכשווית</span>
+                        <span id="header-semester" class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold px-2.5 py-0.5 rounded-full uppercase">סמסטר א' תשפ"ו</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">פורטל בריפים אינטראקטיבי לסימולציות ארגוניות • מערכת סנכרון בזמן אמת</p>
+                </div>
+            </div>
+
+            <!-- Global Controls & Status -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Sync Engine Status Badge -->
+                <div id="sync-status-badge" class="bg-slate-950 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2 pulse-live">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-slate-300 font-bold">סנכרון ענן: <span id="sync-status-text" class="text-emerald-400">פעיל (Live)</span></span>
+                </div>
+
+                <!-- Registered Teams Status -->
+                <div class="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2">
+                    <span class="text-slate-400">צוותים רשומים:</span>
+                    <span id="registered-teams-count" class="font-black text-emerald-400">0</span>
+                </div>
+
+                <!-- Admin Mode Toggle -->
+                <button onclick="toggleAdminMode()" id="admin-mode-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition-all flex items-center gap-2">
+                    <span>⚙️</span> <span id="admin-btn-text">מצב מרצה (ניהול)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl w-full mx-auto p-4 md:p-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Sidebar: Client Selection & Identity Card -->
+        <aside class="lg:col-span-4 space-y-6">
+            
+            <!-- Brief Switcher Container -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider">בחירת תיק לקוח (מקסימום 2 צוותים לבריף):</span>
+                </div>
+                <!-- Dynamic List of Brief Buttons -->
+                <div id="briefs-buttons-container" class="space-y-2">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- Client Identity Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5 relative overflow-hidden">
+                <div class="flex justify-between items-start border-b border-slate-800 pb-4">
+                    <div>
+                        <span id="client-category" class="text-[10px] font-extrabold text-amber-400 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-800">
+                            מערך תפעול ושליחים
+                        </span>
+                        <h2 id="client-name" class="text-2xl font-black text-white mt-2">חברת המשלוחים "זריז"</h2>
+                        <p id="client-contact" class="text-xs text-slate-400 mt-1">איש קשר: רונן ארבל • סמנכ"ל תפעול וצי שליחים</p>
+                    </div>
+                    <span class="text-4xl" id="client-icon">🚚</span>
+                </div>
+
+                <!-- Urgent Impact Status -->
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400 font-bold">דרגת דחיפות פדגוגית:</span>
+                        <span id="client-urgency" class="text-rose-400 font-black bg-rose-950/50 px-2.5 py-0.5 rounded-full border border-rose-800/60">🚨 גבוהה ביותר</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400 font-bold">קהל היעד בשטח:</span>
+                        <span id="client-target" class="text-slate-200 font-bold">120 שליחי קטנוע/רכב (מובייל)</span>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400 font-bold">משקל במטלה:</span>
+                        <span class="text-emerald-400 font-bold">מטלה א' (30%) + מטלה ב' (45%)</span>
+                    </div>
+                </div>
+
+                <!-- Voice Request Section -->
+                <div class="bg-amber-950/20 border border-amber-900/40 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-amber-300 flex items-center gap-2">
+                            <span>🎙️</span> פנייה קולית מוקלטת מהלקוח
+                        </span>
+                        <span id="audio-status-tag" class="text-[10px] text-amber-400/80 font-mono">הקראה קולית בלייב</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <button onclick="toggleSpeech()" id="audio-play-btn" class="w-8 h-8 bg-amber-500 hover:bg-amber-400 rounded-full flex items-center justify-center text-slate-950 font-black text-sm transition-transform active:scale-95 shadow-lg">
+                            ▶
+                        </button>
+                        
+                        <div class="flex-1 flex items-center gap-1.5 justify-center h-6" id="visualizer-container">
+                            <div class="w-1 bg-amber-500 h-2 rounded-full visualizer-bar"></div>
+                            <div class="w-1 bg-amber-400 h-4 rounded-full visualizer-bar"></div>
+                            <div class="w-1 bg-amber-500 h-3 rounded-full visualizer-bar"></div>
+                            <div class="w-1 bg-amber-300 h-5 rounded-full visualizer-bar"></div>
+                            <div class="w-1 bg-amber-500 h-2 rounded-full visualizer-bar"></div>
+                            <div class="w-1 bg-amber-400 h-4 rounded-full visualizer-bar"></div>
+                        </div>
+                    </div>
+
+                    <p id="audio-transcript" class="text-[11px] text-slate-300 italic leading-relaxed bg-slate-950/60 p-2.5 rounded-xl border border-slate-900">
+                        "היי צוות מעצבי הלמידה. השליחים החדשים שלנו נתקעים מול כתובת שגויה או לקוח שלא עונה..."
+                    </p>
+                </div>
+
+                <!-- Registration Trigger -->
+                <button onclick="openRegisterModal()" id="claim-brief-btn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-sm py-3.5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2">
+                    <span>🚀</span> הרשמת צוות לבריף שנבחר (שלשה)
+                </button>
+            </div>
+
+        </aside>
+
+        <section class="lg:col-span-8 space-y-6">
+            
+            <!-- Student Workspace View -->
+            <div id="student-view-panel" class="space-y-6">
+                <!-- Navigation Tabs -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl flex overflow-x-auto text-xs font-bold custom-scrollbar">
+                    <button onclick="showTab('tab-overview')" id="nav-overview" class="tab-active px-5 py-3.5 flex items-center gap-2 transition-all whitespace-nowrap">
+                        <span>📑</span> ניתוח האתגר והבעיה
+                    </button>
+                    <button onclick="showTab('tab-metrics')" id="nav-metrics" class="px-5 py-3.5 text-slate-400 hover:text-white flex items-center gap-2 transition-all whitespace-nowrap">
+                        <span>📊</span> נתוני ROI ונזק כלכלי
+                    </button>
+                    <button onclick="showTab('tab-scenario')" id="nav-scenario" class="px-5 py-3.5 text-slate-400 hover:text-white flex items-center gap-2 transition-all whitespace-nowrap">
+                        <span>🎮</span> סימולטור תרחיש קצה
+                    </button>
+                    <button onclick="showTab('tab-teams')" id="nav-teams" class="px-5 py-3.5 text-slate-400 hover:text-white flex items-center gap-2 transition-all whitespace-nowrap">
+                        <span>👥</span> צוותים ששובצו בלייב
+                    </button>
+                </div>
+
+                <!-- Tab 1: Overview -->
+                <div id="tab-overview" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">⚠️ ניתוח נקודת הכשל בשטח</span>
+                        <h3 class="text-xl font-extrabold text-white">איבוד זמן קריטי בתרחישי קצה בלתי צפויים</h3>
+                        <p id="problem-desc" class="text-sm text-slate-300 leading-relaxed bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                            שליחים חדשים ב"זריז" עוברים חפיפה קצרה בלבד. בעת הגעה לכתובת שגויה, בניין חסר קוד כניסה או לקוח שאינו זמין בטלפון, השליח נכנס למצב תסכול, פועל ללא נוהל אחיד ומעכב את כל מסלול המשלוחים היומי.
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-rose-950/20 p-4 rounded-2xl border border-rose-900/40 space-y-2">
+                            <span class="text-xs font-bold text-rose-400 flex items-center gap-1">❌ ההתנהגות השגויה כיום:</span>
+                            <ul id="wrong-behaviors-list" class="text-xs text-slate-300 space-y-1.5 list-disc mr-4">
+                                <li>השארת החבילה במקום לא מוגן (אובדן חבילות).</li>
+                                <li>המתנה ממושכת של 20-30 דקות מחוץ לבית הלקוח.</li>
+                                <li>נטישת המסלול והתקשרות עצבנית למנהל הצי.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-emerald-950/20 p-4 rounded-2xl border border-emerald-900/40 space-y-2">
+                            <span class="text-xs font-bold text-emerald-400 flex items-center gap-1">🎯 ההתנהגות הנדרשת מהפתרון:</span>
+                            <ul id="right-behaviors-list" class="text-xs text-slate-300 space-y-1.5 list-disc mr-4">
+                                <li>פתיחת מיקרו-סימולציה ניידת בתוך 10 שניות.</li>
+                                <li>קבלת החלטה תקנית לפי נוהל חברת "זריז".</li>
+                                <li>סגירת האירוע והמשך מיידי ליעד הבא במסלול.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: ROI Metrics -->
+                <div id="tab-metrics" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">📈 מדדי נזק כספי וארגוני (ROI)</span>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-1">
+                            <span class="text-xs text-slate-400 block">עיכוב ממוצע במסלול</span>
+                            <span id="metric-val-1" class="text-3xl font-black text-rose-400">28%</span>
+                            <span class="text-[10px] text-slate-500 block">מכלל חלוקות היומיות</span>
+                        </div>
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-1">
+                            <span class="text-xs text-slate-400 block">נזק כספי מוערך</span>
+                            <span id="metric-val-2" class="text-3xl font-black text-amber-400">₪85,000</span>
+                            <span class="text-[10px] text-slate-500 block">הפסד תפעולי בחודש</span>
+                        </div>
+                        <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-1">
+                            <span class="text-xs text-slate-400 block">יעד חיסכון נדרש</span>
+                            <span id="metric-val-3" class="text-3xl font-black text-emerald-400">40%</span>
+                            <span class="text-[10px] text-slate-500 block">צמצום עיכובים בעזרת MVP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Interactive Scenario -->
+                <div id="tab-scenario" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">🎮 סימולטור תרחיש קצה (התנסות ראשונית)</span>
+                        <span class="text-[10px] bg-amber-950 text-amber-300 px-2.5 py-1 rounded-full font-bold border border-amber-800">הדמיית לומד בשטח</span>
+                    </div>
+
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <h4 id="scenario-title" class="text-sm font-bold text-white">תרחיש #1: הגעת לכתובת והלקוח אינו זמין בטלפון</h4>
+                        <p id="scenario-text" class="text-xs text-slate-300 leading-relaxed">
+                            הגעת לבניין, הקשת באינטרקום ואין מענה. התקשרת פעמיים ללקוח והוא אינו עונה. מה הפעולה הנכונה לפי נוהל הארגון?
+                        </p>
+                        
+                        <div id="scenario-options" class="space-y-2 pt-2"></div>
+                        <div id="scenario-feedback" class="hidden p-3 rounded-xl text-xs font-bold"></div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Live Teams -->
+                <div id="tab-teams" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">👥 צוותים ששובצו לבריף זה (מקסימום 2):</span>
+                        <span id="teams-capacity-tag" class="text-xs font-bold text-emerald-400">נותר מקום ל-2 צוותים</span>
+                    </div>
+
+                    <div id="assigned-teams-list" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Admin Workspace View -->
+            <div id="admin-view-panel" class="hidden space-y-6">
+                
+                <!-- Admin Header Actions -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-black text-white flex items-center gap-2">
+                                <span>⚙️</span> דשבורד ניהול מרצה ומרכז בקרה
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, מעקב בזמן אמת, ייצוא דוחות ותיעוד מלא</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button onclick="exportTeamsCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg">
+                                <span>📊</span> ייצוא שיבוצים (Excel/CSV)
+                            </button>
+                            <button onclick="exportSystemJSON()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-slate-700">
+                                📥 גיבוי הגדרות (JSON)
+                            </button>
+                            <button onclick="triggerSemesterResetModal()" class="bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-rose-800">
+                                🔄 איפוס סמסטר מוגן
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Teacher vs Student Capabilities Matrix -->
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                        <h4 class="text-xs font-bold text-amber-400 flex items-center gap-2">
+                            <span>🛡️</span> הגדרת הרשאות ויכולות במערכת (Roles & Permissions)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                                <span class="font-extrabold text-amber-400 block border-b border-slate-800 pb-1">👨‍🏫 יכולות המרצה / סגל הקורס:</span>
+                                <ul class="space-y-1 text-slate-300 list-disc mr-4 text-[11px]">
+                                    <li>יצירת בריפים חדשים ועריכת בריפים קיימים.</li>
+                                    <li>קבלת התראות בלייב וצפייה בתיעוד הפעולות (Audit Log).</li>
+                                    <li>ייצוא רשימת הסטודנטים והצוותים לקובץ CSV/Excel.</li>
+                                    <li>איפוס הרשמות לקראת סמסטר חדש או ייצוא גיבוי קונפיגורציה.</li>
+                                    <li>הגדרת מגבלת קיבולת צוותים לבריף (ברירת מחדל: 2 צוותים).</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 space-y-1.5">
+                                <span class="font-extrabold text-indigo-400 block border-b border-slate-800 pb-1">🎓 יכולות הסטודנט:</span>
+                                <ul class="space-y-1 text-slate-300 list-disc mr-4 text-[11px]">
+                                    <li>צפייה וחקר בריפים, מדדים ותרחישי קצה.</li>
+                                    <li>האזנה להקראת תסריט הלקוח (Text-to-Speech).</li>
+                                    <li>הרשמת צוות (שם חברה + 3 סטודנטים) לבריף פתוח.</li>
+                                    <li>צפייה בלייב בצוותים האחרים שנרשמו לבריף.</li>
+                                    <li>חסימה אוטומטית בעת הגעה למכסת הצוותים (🔒 הבריף מלא).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backend Infrastructure Architecture Card -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                    <h4 class="font-bold text-amber-400 text-sm flex items-center gap-2">
+                        <span>☁️</span> ארכיטקטורת הסנכרון וה-Backend מאחורי הקלעים
+                    </h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        כדי שהמערכת תתעדכן **בלייב בזמן אמת** אצל כל הסטודנטים והמרצה במקביל, הנתונים מסתנכרנים דרך מנגנון ענן מרכזי:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-emerald-400 font-bold block">1. Realtime Database</span>
+                            <p class="text-[11px] text-slate-400">סנכרון מיידי דרך WebSockets / Firebase / Supabase. ברגע שצוות נרשם – כל הניידים בכיתה מתעדכנים.</p>
+                        </div>
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-amber-400 font-bold block">2. Push & Webhooks</span>
+                            <p class="text-[11px] text-slate-400">שליחת התראה אוטומטית למרצה (Email / Telegram Bot / Moodle Notification) עם כל הרשמת צוות חדשה.</p>
+                        </div>
+                        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-1">
+                            <span class="text-indigo-400 font-bold block">3. Audit Log & Persistence</span>
+                            <p class="text-[11px] text-slate-400">תיעוד מלא ובלתי פתיר של כל פעולה, זמן הרשמה, כתובת IP וזהות הסטודנט למניעת חריגות.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brief Creation Form -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 text-xs">
+                    <h4 class="font-bold text-amber-400 text-sm">הוספת / עריכת בריף לקוח חדש במערכת:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-slate-400 font-bold mb-1">שם חברה/לקוח:</label>
+                            <input id="admin-brief-name" type="text" placeholder="למשל: חברת המשלוחים זריז" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-bold mb-1">אייקון (Emoji):</label>
+                            <input id="admin-brief-icon" type="text" placeholder="🚚" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-bold mb-1">קטגוריה תפעולית:</label>
+                            <input id="admin-brief-category" type="text" placeholder="מערך תפעול ושליחים" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 font-bold mb-1">איש קשר ותפקיד:</label>
+                            <input id="admin-brief-contact" type="text" placeholder="רונן ארבל • סמנכ''ל תפעול" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 font-bold mb-1">תזריט פנייה קולית (עבור הקראת Text-to-Speech):</label>
+                        <textarea id="admin-brief-audio" rows="2" placeholder="הקלידי את טקסט הפנייה הקולית שהדפדפן יקריא לסטודנטים..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-400 font-bold mb-1">ניתוח הבעיה והאתגר העסקי:</label>
+                        <textarea id="admin-brief-problem" rows="2" placeholder="תארי את הכשל בשטח, העיכובים והפער הלימודי..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500"></textarea>
+                    </div>
+
+                    <button onclick="saveNewBrief()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-5 rounded-xl transition-all flex items-center gap-2">
+                        <span>➕</span> שמירת בריף חדש במערכת הקורס
+                    </button>
+                </div>
+
+                <!-- Audit Log Table -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                        <h4 class="font-bold text-amber-400 text-sm flex items-center gap-2">
+                            <span>📜</span> יומן פעילויות ותיעוד מערכת (Audit Log)
+                        </h4>
+                        <span id="logs-count-tag" class="text-[10px] bg-slate-950 text-slate-400 px-2.5 py-1 rounded-full border border-slate-800">0 אירועים מתועדים</span>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden max-h-60 overflow-y-auto custom-scrollbar">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">זמן</th>
+                                    <th class="p-3">סוג פעולה</th>
+                                    <th class="p-3">פרטי האירוע</th>
+                                    <th class="p-3">מבצע</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-logs-table-body" class="divide-y divide-slate-900 text-slate-300">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Registration Modal -->
+    <div id="register-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-5 relative shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span>🚀</span> הרשמת צוות לבריף שנבחר
+                </h3>
+                <button onclick="closeRegisterModal()" class="text-slate-400 hover:text-white font-bold">✕</button>
+            </div>
+
+    <!-- Admin Authentication Modal (PROTECTED LOGIN) -->
+    <div id="admin-login-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/50 rounded-3xl p-6 max-w-md w-full space-y-5 relative shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span>🔒</span> כניסה מוגנת למצב מרצה / ניהול
+                </h3>
+                <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-white font-bold">✕</button>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+                מצב הניהול מיועד למרצה וסגל הקורס בלבד. נא להזין שם משתמש וסיסמה כדי להמשיך לדשבורד הבקרה.
+            </p>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-amber-400 font-bold mb-1">שם משתמש:</label>
+                    <input id="admin-username-input" type="text" placeholder="admin" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-amber-400 font-bold mb-1">סיסמה:</label>
+                    <input id="admin-password-input" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <div class="bg-amber-950/30 p-2.5 rounded-xl border border-amber-900/40 text-[11px] text-amber-300">
+                🔑 <strong>פרטי גישה לדמו:</strong> שם משתמש: <code class="bg-slate-950 px-1.5 py-0.5 rounded font-mono text-white">admin</code> | סיסמה: <code class="bg-slate-950 px-1.5 py-0.5 rounded font-mono text-white">hit2026</code>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeAdminLoginModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-3 rounded-xl">
+                    ביטול
+                </button>
+                <button onclick="submitAdminLogin()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs py-3 rounded-xl transition-all shadow-lg">
+                    🔑 התחבר למערכת
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Protected Semester Reset Modal Wizard -->
+    <div id="reset-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-rose-900/60 rounded-3xl p-6 max-w-md w-full space-y-5 relative shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-rose-400 flex items-center gap-2">
+                    <span>🔄</span> אשף איפוס סמסטריאלי מוגן
+                </h3>
+                <button onclick="closeResetModal()" class="text-slate-400 hover:text-white font-bold">✕</button>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">
+                פעולה זו תנקה את כל הרשמות הצוותים והיומנים של הסמסטר הנוכחי, ותכין את המערכת לסמסטר חדש. מומלץ להוריד קובץ CSV/JSON לפני האיפוס!
+            </p>
+
+            <div class="bg-rose-950/30 p-3 rounded-xl border border-rose-900/40 text-xs text-rose-300 space-y-1">
+                <span class="font-bold block">⚠️ אבטחת איפוס:</span>
+                <p>הקלידי את המילה <strong class="text-white">RESET</strong> כדי לאשר איפוס סופי:</p>
+            </div>
+
+            <input id="reset-confirm-input" type="text" placeholder="RESET" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white text-center font-mono focus:outline-none focus:border-rose-500">
+
+            <div class="flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-3 rounded-xl">
+                    ביטול
+                </button>
+                <button onclick="executeSemesterReset()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg">
+                    ✓ אישור איפוס סופי
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-msg" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-black text-xs px-6 py-3 rounded-2xl shadow-2xl z-50 transition-all">
+        ✓ הפעולה בוצעה בהצלחה!
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 p-5 text-center text-xs text-slate-500">
+        פיתוח פדגוגי יישומי • קורס טכנולוגיות למידה עכשווית • הפקולטה לטכנולוגיות למידה HIT
+    </footer>
+
+    <script>
+        // Initial Database Briefs
+        const initialBriefs = [
+            {
+                id: "zariz",
+                category: "מערך תפעול ושליחים",
+                name: "חברת המשלוחים \"זריז\"",
+                contact: "רונן ארבל • סמנכ\"ל תפעול וצי שליחים",
+                icon: "🚚",
+                urgency: "🚨 גבוהה ביותר",
+                target: "120 שליחי קטנוע/רכב (מובייל)",
+                audio: "היי צוות מעצבי הלמידה. השליחים החדשים שלנו נתקעים מול כתובת שגויה או לקוח שלא עונה, ופועלים על דעת עצמם. אנחנו מתוסכלים מנזק של עשרות אלפי שקלים בחודש. אנחנו חייבים פתרון זמין בנייד שיעזור להם לקבל החלטה נכונה ב-20 שניות!",
+                problem: "שליחים חדשים ב\"זריז\" עוברים חפיפה קצרה בלבד. בעת הגעה לכתובת שגויה, בניין חסר קוד כניסה או לקוח שאינו זמין בטלפון, השליח נכנס למצב תסכול, פועל ללא נוהל אחיד ומעכב את כל מסלול המשלוחים היומי.",
+                wrongBehaviors: [
+                    "השארת החבילה במקום לא מוגן (אובדן חבילות).",
+                    "המתנה ממושכת של 20-30 דקות מחוץ לבית הלקוח.",
+                    "נטישת המסלול והתקשרות עצבנית למנהל הצי."
+                ],
+                rightBehaviors: [
+                    "פתיחת מיקרו-סימולציה ניידת בתוך 10 שניות.",
+                    "קבלת החלטה תקנית לפי נוהל חברת \"זריז\".",
+                    "סגירת האירוע והמשך מיידי ליעד הבא במסלול."
+                ],
+                metrics: { delay: "28%", loss: "₪85,000", target: "40%" },
+                scenario: {
+                    title: "תרחיש #1: הגעת לכתובת והלקוח אינו זמין בטלפון",
+                    text: "הגעת לבניין, הקשת באינטרקום ואין מענה. התקשרת פעמיים ללקוח והוא אינו עונה. החבילה מסומנת כדחופה. מה הפעולה הנכונה לפי נוהל הארגון?",
+                    options: [
+                        { text: "A. השארת החבילה ליד דלת הבניין וצילום תמונה.", correct: false, feedback: "❌ שגוי! השארת חבילה מחוץ לבניין גורמת לאובדן חבילות ונזק כספי." },
+                        { text: "B. המתנה של 25 דקות בפתח הבניין עד שהלקוח יחזור.", correct: false, feedback: "❌ שגוי! המתנה ממושכת מעכבת את כל מסלול המשלוחים ב-28%." },
+                        { text: "C. הפעלת נוהל 'חזרה למרכז', עדכון באפליקציה והמשך ליעד הבא.", correct: true, feedback: "✓ נכון מאוד! נוהל זה חוסך 15 דקות עיכוב ומגן על החבילה." }
+                    ]
+                }
+            },
+            {
+                id: "aerotech",
+                category: "תחזוקת מערכות מבצעיות",
+                name: "חברת AeroTech כטב\"מים",
+                contact: "אל\"מ (מיל') דן הראל • מנהל הדרכה",
+                icon: "🛸",
+                urgency: "⚡ קריטית",
+                target: "45 טכנאי שטח ומפעילי כטב\"מים",
+                audio: "שלום לצוות. יש לנו עלייה של 35% בתקלות תחזוקה חוזרות בשטח עקב חוסר זמינות של ספרות טכנית ברגע האמת. הטכנאים בשטח צריכים כלי AR או מובייל פשוט לזהות רעדים ברכיבים ולתקן בזמן אמת.",
+                problem: "טכנאי שטח נתקלים בתקלות מורכבות ברכיבי כטב\"ם בשטח פתוח. הספרות הטכנית הישנה אינה נגישה בנייד, מה שמוביל לטעויות תחזוקה קריטיות ונזק של 120,000 ₪ בחודש.",
+                wrongBehaviors: [
+                    "פירוק רכיבים שגוי ללא דיאגרמה מעודכנת.",
+                    "המתנה ארוכה לצוות תמיכה מרכזי.",
+                    "אי-דיווח על תקלות רעד חריגות."
+                ],
+                rightBehaviors: [
+                    "סריקת הרכיב בנייד וקבלת הנחיות AR.",
+                    "ביצוע בדיקת רעד מהירה בתוך 30 שניות.",
+                    "תיעוד התקלה אוטומטית במערכת."
+                ],
+                metrics: { delay: "35%", loss: "₪120,000", target: "50%" },
+                scenario: {
+                    title: "תרחיש #1: זהה רעד חריג במנוע הכטב\"ם בשטח",
+                    text: "במהלך בדיקת טרום-טיסה, המנוע מציג רעידות קלות. הספרות המודפסת לא מפרטת את סף הרעד המותר. מה עושים?",
+                    options: [
+                        { text: "A. מטיסים מחדש ומקווים שהרעד ייעלם.", correct: false, feedback: "❌ שגוי! סיכון בטיחותי חמור ונזק לצילינדר." },
+                        { text: "B. סריקת הרכיב באפליקציית AR לקבלת דיאגרמה ותקן רעד.", correct: true, feedback: "✓ נכון! הסריקה מציגה מיד האם הרעד בתקן ומציגה מדריך תיקון." },
+                        { text: "C. ביטול המשימה והחזרת הכטב\"ם למעבדה המרכזית.", correct: false, feedback: "❌ שגוי! ביטול מיותר של משימה מבצעית." }
+                    ]
+                }
+            }
+        ];
+
+        // Global State Engine
+        let briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
+        let registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
+        let auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [
+            { time: new Date().toLocaleTimeString('he-IL'), action: "SYSTEM_INIT", details: "אנהול מערכת סמסטריאלית - פורטל בריפים", actor: "מערכת LMS" }
+        ];
+
+        let activeBriefId = briefs[0].id;
+        let isAdminMode = false;
+        let isAdminAuthenticated = false; // Auth status flag
+        let isSpeaking = false;
+
+        // BroadcastChannel for Live Cross-Tab Sync Simulation
+        const syncChannel = 'speechSynthesis' in window && window.BroadcastChannel 
+            ? new BroadcastChannel('hit_lms_portal_sync') 
+            : null;
+
+        if (syncChannel) {
+            syncChannel.onmessage = function(event) {
+                if (event.data && event.data.type === 'STATE_UPDATED') {
+                    reloadStateFromStorage();
+                    showToast('🔔 עדכון בלייב: צוות חדש נרשם זה עתה במערכת!');
+                }
+            };
+        }
+
+        // Initialize App
+        window.onload = function() {
+            renderBriefButtons();
+            loadBriefDetails(activeBriefId);
+            updateTeamsBadge();
+            renderAuditLogs();
+        };
+
+        function reloadStateFromStorage() {
+            briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
+            registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
+            auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [];
+            renderBriefButtons();
+            loadBriefDetails(activeBriefId);
+            updateTeamsBadge();
+            renderAuditLogs();
+        }
+
+        function broadcastChange() {
+            if (syncChannel) {
+                syncChannel.postMessage({ type: 'STATE_UPDATED', timestamp: Date.now() });
+            }
+        }
+
+        function addLog(action, details, actor = "מרצה/סטודנט") {
+            const logEntry = {
+                time: new Date().toLocaleTimeString('he-IL'),
+                action: action,
+                details: details,
+                actor: actor
+            };
+            auditLogs.unshift(logEntry);
+            localStorage.setItem('hit_portal_logs', JSON.stringify(auditLogs));
+            renderAuditLogs();
+        }
+
+        function renderAuditLogs() {
+            const container = document.getElementById('audit-logs-table-body');
+            const countTag = document.getElementById('logs-count-tag');
+            if (!container) return;
+
+            countTag.innerText = `${auditLogs.length} אירועים מתועדים`;
+            container.innerHTML = auditLogs.map(log => `
+                <tr class="hover:bg-slate-900/60 transition-colors">
+                    <td class="p-3 font-mono text-[10px] text-slate-400">${log.time}</td>
+                    <td class="p-3"><span class="bg-slate-800 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold">${log.action}</span></td>
+                    <td class="p-3 text-slate-200">${log.details}</td>
+                    <td class="p-3 text-slate-400 font-bold">${log.actor}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderBriefButtons() {
+            const container = document.getElementById('briefs-buttons-container');
+            container.innerHTML = '';
+
+            briefs.forEach(b => {
+                const teamsCount = registeredTeams.filter(t => t.briefId === b.id).length;
+                const isFull = teamsCount >= 2;
+                const isSelected = b.id === activeBriefId;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => switchBrief(b.id);
+                btn.className = `w-full text-right p-3 rounded-2xl transition-all border flex items-center justify-between text-xs font-bold ${
+                    isSelected 
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-md font-black' 
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                }`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-base">${b.icon}</span>
+                        <span>${b.name}</span>
+                    </div>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full ${isFull ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-slate-800 text-slate-400'}">
+                        ${teamsCount}/2 צוותים
+                    </span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function switchBrief(id) {
+            activeBriefId = id;
+            if (isSpeaking) window.speechSynthesis.cancel();
+            renderBriefButtons();
+            loadBriefDetails(id);
+        }
+
+        function loadBriefDetails(id) {
+            const b = briefs.find(x => x.id === id);
+            if (!b) return;
+
+            document.getElementById('client-category').innerText = b.category;
+            document.getElementById('client-name').innerText = b.name;
+            document.getElementById('client-contact').innerText = b.contact;
+            document.getElementById('client-icon').innerText = b.icon;
+            document.getElementById('client-urgency').innerText = b.urgency;
+            document.getElementById('client-target').innerText = b.target;
+            document.getElementById('audio-transcript').innerText = `"${b.audio}"`;
+            document.getElementById('problem-desc').innerText = b.problem;
+
+            // Update Lists
+            const wrongList = document.getElementById('wrong-behaviors-list');
+            wrongList.innerHTML = b.wrongBehaviors.map(item => `<li>${item}</li>`).join('');
+
+            const rightList = document.getElementById('right-behaviors-list');
+            rightList.innerHTML = b.rightBehaviors.map(item => `<li>${item}</li>`).join('');
+
+            // Metrics
+            document.getElementById('metric-val-1').innerText = b.metrics.delay;
+            document.getElementById('metric-val-2').innerText = b.metrics.loss;
+            document.getElementById('metric-val-3').innerText = b.metrics.target;
+
+            // Scenario
+            document.getElementById('scenario-title').innerText = b.scenario.title;
+            document.getElementById('scenario-text').innerText = b.scenario.text;
+            
+            const optionsContainer = document.getElementById('scenario-options');
+            optionsContainer.innerHTML = '';
+            const feedbackBox = document.getElementById('scenario-feedback');
+            feedbackBox.className = 'hidden';
+
+            b.scenario.options.forEach((opt) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = "w-full text-right p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs text-slate-200 transition-all";
+                optBtn.innerText = opt.text;
+                optBtn.onclick = () => {
+                    feedbackBox.classList.remove('hidden');
+                    feedbackBox.innerText = opt.feedback;
+                    feedbackBox.className = opt.correct 
+                        ? 'p-3 rounded-xl text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800' 
+                        : 'p-3 rounded-xl text-xs font-bold bg-rose-950 text-rose-300 border border-rose-800';
+                };
+                optionsContainer.appendChild(optBtn);
+            });
+
+            renderAssignedTeams(id);
+        }
+
+        function toggleSpeech() {
+            const b = briefs.find(x => x.id === activeBriefId);
+            const btn = document.getElementById('audio-play-btn');
+
+            if (!('speechSynthesis' in window)) {
+                showToast('❌ הדפדפן אינו תומך בהקראה קולית');
+                return;
+            }
+
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+                isSpeaking = false;
+                btn.innerText = '▶';
+            } else {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(b.audio);
+                utterance.lang = 'he-IL';
+                utterance.rate = 0.95;
+
+                utterance.onstart = () => {
+                    isSpeaking = true;
+                    btn.innerText = '❚❚';
+                };
+
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    btn.innerText = '▶';
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function showTab(tabId) {
+            ['tab-overview', 'tab-metrics', 'tab-scenario', 'tab-teams'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+
+            ['nav-overview', 'nav-metrics', 'nav-scenario', 'nav-teams'].forEach(id => {
+                const btn = document.getElementById(id);
+                btn.className = "px-5 py-3.5 text-slate-400 hover:text-white flex items-center gap-2 transition-all whitespace-nowrap";
+            });
+            
+            const activeNavId = tabId.replace('tab-', 'nav-');
+            document.getElementById(activeNavId).className = "tab-active px-5 py-3.5 flex items-center gap-2 transition-all whitespace-nowrap font-bold";
+        }
+
+        function renderAssignedTeams(briefId) {
+            const teamsList = document.getElementById('assigned-teams-list');
+            const briefTeams = registeredTeams.filter(t => t.briefId === briefId);
+            const capacityTag = document.getElementById('teams-capacity-tag');
+
+            const remaining = 2 - briefTeams.length;
+            capacityTag.innerText = remaining > 0 ? `נותר מקום ל-${remaining} צוותים` : '🔒 הבריף מלא (2/2 צוותים)';
+            capacityTag.className = remaining > 0 ? 'text-xs font-bold text-emerald-400' : 'text-xs font-bold text-rose-400';
+
+            if (briefTeams.length === 0) {
+                teamsList.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center bg-slate-950 rounded-2xl border border-slate-800">אף צוות עדיין לא נרשם לבריף זה. תהיו הראשונים!</div>`;
+                return;
+            }
+
+            teamsList.innerHTML = briefTeams.map((t, index) => `
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-amber-400">חברה #${index + 1}: ${t.companyName}</span>
+                        <span class="text-[10px] text-slate-500">${t.registeredAt}</span>
+                    </div>
+                    <div class="text-xs text-slate-300 font-medium">
+                        👥 חברי הצוות: ${t.students.join(' • ')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openRegisterModal() {
+            const briefTeams = registeredTeams.filter(t => t.briefId === activeBriefId);
+            if (briefTeams.length >= 2) {
+                showToast('🔒 בריף זה מלא (הגיע למכסת 2 הצוותים)');
+                return;
+            }
+            document.getElementById('register-modal').classList.remove('hidden');
+        }
+
+        function closeRegisterModal() {
+            document.getElementById('register-modal').classList.add('hidden');
+        }
+
+        function submitTeamRegistration() {
+            const companyName = document.getElementById('team-company-name').value.trim();
+            const s1 = document.getElementById('team-student-1').value.trim();
+            const s2 = document.getElementById('team-student-2').value.trim();
+            const s3 = document.getElementById('team-student-3').value.trim();
+
+            if (!companyName || !s1 || !s2) {
+                showToast('❌ נא למלא את שם החברה ולפחות 2 חברי צוות');
+                return;
+            }
+
+            const newTeam = {
+                id: 'team_' + Date.now(),
+                briefId: activeBriefId,
+                companyName: companyName,
+                students: [s1, s2, s3].filter(Boolean),
+                registeredAt: new Date().toLocaleTimeString('he-IL') + ' ' + new Date().toLocaleDateString('he-IL')
+            };
+
+            registeredTeams.push(newTeam);
+            localStorage.setItem('hit_portal_teams', JSON.stringify(registeredTeams));
+
+            const activeBrief = briefs.find(b => b.id === activeBriefId);
+            addLog("TEAM_REGISTERED", `צוות "${companyName}" נרשם לבריף ${activeBrief.name}`, s1);
+
+            closeRegisterModal();
+            renderBriefButtons();
+            renderAssignedTeams(activeBriefId);
+            updateTeamsBadge();
+            broadcastChange();
+            showToast('✓ הצוות נרשם בהצלחה וסונכרן בענן!');
+
+            // Clear inputs
+            document.getElementById('team-company-name').value = '';
+            document.getElementById('team-student-1').value = '';
+            document.getElementById('team-student-2').value = '';
+            document.getElementById('team-student-3').value = '';
+        }
+
+        function updateTeamsBadge() {
+            document.getElementById('registered-teams-count').innerText = registeredTeams.length;
+        }
+
+        function toggleAdminMode() {
+            if (!isAdminMode) {
+                // If trying to enter admin mode and not authenticated yet, open login modal
+                if (!isAdminAuthenticated) {
+                    openAdminLoginModal();
+                    return;
+                }
+                enterAdminPanel();
+            } else {
+                exitAdminPanel();
+            }
+        }
+
+        function openAdminLoginModal() {
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+            document.getElementById('admin-username-input').value = '';
+            document.getElementById('admin-password-input').value = '';
+        }
+
+        function submitAdminLogin() {
+            const user = document.getElementById('admin-username-input').value.trim();
+            const pass = document.getElementById('admin-password-input').value.trim();
+
+            if (user === 'admin' && pass === 'hit2026') {
+                isAdminAuthenticated = true;
+                closeAdminLoginModal();
+                enterAdminPanel();
+                showToast('🔑 התחברת בהצלחה כמנהל המערכת!');
+            } else {
+                showToast('❌ שם משתמש או סיסמה שגויים');
+            }
+        }
+
+        function enterAdminPanel() {
+            isAdminMode = true;
+            document.getElementById('student-view-panel').classList.add('hidden');
+            document.getElementById('admin-view-panel').classList.remove('hidden');
+            document.getElementById('admin-btn-text').innerText = 'יציאה ממצב מרצה';
+            addLog("ADMIN_MODE_ENTERED", "כניסה מורשית לדשבורד ניהול מרצה", "מרצה הקורס");
+        }
+
+        function exitAdminPanel() {
+            isAdminMode = false;
+            document.getElementById('admin-view-panel').classList.add('hidden');
+            document.getElementById('student-view-panel').classList.remove('hidden');
+            document.getElementById('admin-btn-text').innerText = 'מצב מרצה (ניהול)';
+        }
+
+        function saveNewBrief() {
+            const name = document.getElementById('admin-brief-name').value.trim();
+            const icon = document.getElementById('admin-brief-icon').value.trim() || '💼';
+            const category = document.getElementById('admin-brief-category').value.trim() || 'מערך הדרכה';
+            const contact = document.getElementById('admin-brief-contact').value.trim() || 'מנהל הדרכה';
+            const audio = document.getElementById('admin-brief-audio').value.trim();
+            const problem = document.getElementById('admin-brief-problem').value.trim();
+
+            if (!name || !problem) {
+                showToast('❌ נא למלא שם חברה וניתוח בעיה');
+                return;
+            }
+
+            const newBrief = {
+                id: 'brief_' + Date.now(),
+                category: category,
+                name: name,
+                contact: contact,
+                icon: icon,
+                urgency: "🚨 גבוהה",
+                target: "עובדי שטח ומנהלים",
+                audio: audio || "פנייה קולית חדשה מהלקוח...",
+                problem: problem,
+                wrongBehaviors: ["ביצוע שגוי של תהליכים בשטח.", "חוסר אחידות בנוהל."],
+                rightBehaviors: ["פתיחת כלי דיגיטלי בתוך 10 שניות.", "סגירת אירוע תפעולי."],
+                metrics: { delay: "25%", loss: "₪50,000", target: "35%" },
+                scenario: {
+                    title: "תרחיש קצה ראשוני",
+                    text: "הדגמת תרחיש קצה עבור הבריף החדש.",
+                    options: [
+                        { text: "פעולה א' שגויה", correct: false, feedback: "❌ פעולה זו אינה תואמת נוהל." },
+                        { text: "פעולה ב' נכונה", correct: true, feedback: "✓ מצוין! פעולה זו חוסכת עיכוב." }
+                    ]
+                }
+            };
+
+            briefs.push(newBrief);
+            localStorage.setItem('hit_portal_briefs', JSON.stringify(briefs));
+            addLog("BRIEF_CREATED", `נוצר בריף חדש במערכת: ${name}`, "מרצה הקורס");
+            
+            renderBriefButtons();
+            switchBrief(newBrief.id);
+            toggleAdminMode();
+            broadcastChange();
+            showToast('✓ הבריף החדש נשמר בהצלחה במערכת!');
+        }
+
+        function exportTeamsCSV() {
+            if (registeredTeams.length === 0) {
+                showToast('❌ אין צוותים רשומים לייצוא');
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM for Hebrew Excel
+            csvContent += "מזהה בריף,שם הבריף,שם החברה (צוות),תאריך ושעת הרשמה,סטודנט 1,סטודנט 2,סטודנט 3\n";
+
+            registeredTeams.forEach(t => {
+                const brief = briefs.find(b => b.id === t.briefId);
+                const briefName = brief ? brief.name.replace(/"/g, '""') : t.briefId;
+                const company = t.companyName.replace(/"/g, '""');
+                const s1 = (t.students[0] || '').replace(/"/g, '""');
+                const s2 = (t.students[1] || '').replace(/"/g, '""');
+                const s3 = (t.students[2] || '').replace(/"/g, '""');
+
+                csvContent += `"${t.briefId}","${briefName}","${company}","${t.registeredAt}","${s1}","${s2}","${s3}"\n`;
+            });
+
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `hit_teams_export_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            addLog("TEAMS_EXPORTED", "ייצוא דוח שיבוצי צוותים לקובץ CSV/Excel", "מרצה הקורס");
+            showToast('📊 קובץ Excel/CSV יוצא בהצלחה!');
+        }
+
+        function exportSystemJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ briefs, registeredTeams, auditLogs }, null, 2));
+            const link = document.createElement('a');
+            link.setAttribute("href", dataStr);
+            link.setAttribute("download", `hit_portal_full_backup_${Date.now()}.json`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            
+            addLog("SYSTEM_BACKUP", "ייצוא גיבוי קונפיגורציה מלא (JSON)", "מרצה הקורס");
+        }
+
+        function triggerSemesterResetModal() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+            document.getElementById('reset-confirm-input').value = '';
+        }
+
+        function executeSemesterReset() {
+            const val = document.getElementById('reset-confirm-input').value.trim();
+            if (val !== 'RESET') {
+                showToast('❌ נא להקליד RESET בדיוק כדי לאשר איפוס');
+                return;
+            }
+
+            localStorage.removeItem('hit_portal_briefs');
+            localStorage.removeItem('hit_portal_teams');
+            localStorage.removeItem('hit_portal_logs');
+
+            briefs = initialBriefs;
+            registeredTeams = [];
+            auditLogs = [{ time: new Date().toLocaleTimeString('he-IL'), action: "SEMESTER_RESET", details: "איפוס סמסטריאלי מוגן - מערכת מוכנה לסמסטר חדש", actor: "מרצה הקורס" }];
+
+            localStorage.setItem('hit_portal_briefs', JSON.stringify(briefs));
+            localStorage.setItem('hit_portal_teams', JSON.stringify(registeredTeams));
+            localStorage.setItem('hit_portal_logs', JSON.stringify(auditLogs));
+
+            closeResetModal();
+            renderBriefButtons();
+            switchBrief(briefs[0].id);
+            updateTeamsBadge();
+            renderAuditLogs();
+            broadcastChange();
+            showToast('✓ המערכת אופסה בהצלחה לקראת סמסטר חדש!');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            toast.innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+    </script>
+</body>
+</html>
