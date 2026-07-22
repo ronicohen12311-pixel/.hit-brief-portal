@@ -276,7 +276,7 @@
                             <h3 class="text-lg font-black text-white flex items-center gap-2">
                                 <span>⚙️</span> דשבורד ניהול מרצה ומרכז בקרה
                             </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, הגדרות API מורחבות, עריכה/מחיקה, ייצוא דוחות ותיעוד מלא</p>
+                            <p class="text-xs text-slate-400 mt-0.5">ניהול סמסטריאלי, עריכה/מחיקה, ייצוא דוחות ותיעוד מלא</p>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap">
                             <button onclick="exportTeamsCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg">
@@ -592,7 +592,7 @@
         window.briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
         window.registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
         window.auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [
-            { time: new Date().toLocaleTimeString('he-IL'), action: "SYSTEM_INIT", details: "אנהול מערכת סמסטריאלית - פורטל בריפים", actor: "מערכת LMS" }
+            { time: new Date().toLocaleTimeString('he-IL'), action: "SYSTEM_INIT", details: "אתחול פורטל בריפים", actor: "מערכת LMS" }
         ];
 
         window.activeBriefId = window.briefs[0].id;
@@ -607,8 +607,13 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                await signInAnonymously(auth);
-                currentUser = auth.currentUser;
+                // Attempt optional anonymous auth without blocking Firestore sync
+                try {
+                    await signInAnonymously(auth);
+                    currentUser = auth.currentUser;
+                } catch (authErr) {
+                    console.log("Anonymous auth notice (proceeding with direct Firestore connection):", authErr);
+                }
 
                 const syncText = document.getElementById('sync-status-text');
                 if (syncText) {
@@ -619,11 +624,11 @@
                 subscribeToCloudData();
 
             } catch (err) {
-                console.warn("Cloud sync fallback notice:", err);
+                console.error("Cloud sync init error:", err);
                 const syncText = document.getElementById('sync-status-text');
                 if (syncText) {
-                    syncText.innerText = 'פעיל (סנכרון ענן בזמן אמת)';
-                    syncText.className = 'text-emerald-400 font-bold';
+                    syncText.innerText = 'שגיאת חיבור ענן';
+                    syncText.className = 'text-rose-400 font-bold';
                 }
             }
         }
@@ -635,18 +640,24 @@
             const briefsRef = collection(db, 'hit_briefs_2026');
             const logsRef = collection(db, 'hit_logs_2026');
 
-            // Realtime Teams Listener
+            // Realtime Teams Listener (Single Source of Truth)
             onSnapshot(teamsRef, (snapshot) => {
                 const cloudTeams = [];
                 snapshot.forEach(doc => cloudTeams.push(doc.data()));
-                if (cloudTeams.length > 0) {
-                    window.registeredTeams = cloudTeams;
-                    localStorage.setItem('hit_portal_teams', JSON.stringify(window.registeredTeams));
-                    window.renderBriefButtons();
-                    window.renderAssignedTeams(window.activeBriefId);
-                    window.updateTeamsBadge();
+                
+                window.registeredTeams = cloudTeams;
+                localStorage.setItem('hit_portal_teams', JSON.stringify(window.registeredTeams));
+                window.renderBriefButtons();
+                window.renderAssignedTeams(window.activeBriefId);
+                window.updateTeamsBadge();
+            }, (err) => {
+                console.error("Teams sync error:", err);
+                const syncText = document.getElementById('sync-status-text');
+                if (syncText) {
+                    syncText.innerText = 'שגיאת הרשאות Firestore';
+                    syncText.className = 'text-rose-400 font-bold';
                 }
-            }, (err) => console.log("Teams sync notice:", err));
+            });
 
             // Realtime Briefs Listener
             onSnapshot(briefsRef, (snapshot) => {
@@ -658,7 +669,7 @@
                     window.renderBriefButtons();
                     window.loadBriefDetails(window.activeBriefId);
                 }
-            }, (err) => console.log("Briefs sync notice:", err));
+            }, (err) => console.error("Briefs sync notice:", err));
 
             // Realtime Logs Listener
             onSnapshot(logsRef, (snapshot) => {
@@ -669,7 +680,7 @@
                     localStorage.setItem('hit_portal_logs', JSON.stringify(window.auditLogs));
                     window.renderAuditLogs();
                 }
-            }, (err) => console.log("Logs sync notice:", err));
+            }, (err) => console.error("Logs sync notice:", err));
         }
 
         window.saveTeamToCloud = async function(team) {
