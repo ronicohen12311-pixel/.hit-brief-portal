@@ -589,10 +589,10 @@
             }
         ];
 
-        window.briefs = JSON.parse(localStorage.getItem('hit_portal_briefs')) || initialBriefs;
-        window.registeredTeams = JSON.parse(localStorage.getItem('hit_portal_teams')) || [];
-        window.auditLogs = JSON.parse(localStorage.getItem('hit_portal_logs')) || [
-            { time: new Date().toLocaleTimeString('he-IL'), action: "SYSTEM_INIT", details: "אתחול פורטל בריפים", actor: "מערכת LMS" }
+        window.briefs = initialBriefs;
+        window.registeredTeams = [];
+        window.auditLogs = [
+            { time: new Date().toLocaleTimeString('he-IL'), action: "SYSTEM_INIT", details: "אתחול פורטל בריפים בענן", actor: "מערכת LMS" }
         ];
 
         window.activeBriefId = window.briefs[0].id;
@@ -645,8 +645,10 @@
                 const cloudTeams = [];
                 snapshot.forEach(doc => cloudTeams.push(doc.data()));
                 
+                // Pure Cloud Sync: Override local memory entirely with cloud state
                 window.registeredTeams = cloudTeams;
                 localStorage.setItem('hit_portal_teams', JSON.stringify(window.registeredTeams));
+                
                 window.renderBriefButtons();
                 window.renderAssignedTeams(window.activeBriefId);
                 window.updateTeamsBadge();
